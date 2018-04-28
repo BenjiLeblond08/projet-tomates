@@ -1,0 +1,1063 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"Start",
+				"startSequence"
+			],
+			[
+				"wai",
+				"wait_ms"
+			],
+			[
+				"FT",
+				"FTDI_Tx"
+			],
+			[
+				"p",
+				"printf\tprintf …"
+			],
+			[
+				"one",
+				"oneWireGet_byte"
+			],
+			[
+				"retu",
+				"returns\t-> decltype(…)"
+			],
+			[
+				"onew",
+				"oneWireSet_byte"
+			],
+			[
+				"wait",
+				"wait_us"
+			],
+			[
+				"wiat",
+				"wait_us"
+			],
+			[
+				"wa",
+				"wait_us"
+			],
+			[
+				"in",
+				"input"
+			],
+			[
+				"if",
+				"if\tIf Condition"
+			],
+			[
+				"on",
+				"oneWireReset"
+			],
+			[
+				"ex",
+				"expected_answer"
+			],
+			[
+				"re",
+				"read"
+			],
+			[
+				"HC",
+				"HC12_END_CMD"
+			],
+			[
+				"H",
+				"HC12_TAILLE_BUFFER"
+			],
+			[
+				"def",
+				"def\t#ifndef … #define … #endif"
+			],
+			[
+				"cal",
+				"calc_TW"
+			],
+			[
+				"AD",
+				"AD9850_POWERUP"
+			],
+			[
+				"for",
+				"for\tFor Loop"
+			],
+			[
+				"fre",
+				"freq"
+			],
+			[
+				"unsi",
+				"unsigned"
+			],
+			[
+				"a",
+				"amp_5_6"
+			],
+			[
+				"amp",
+				"amp_1_4"
+			],
+			[
+				"f_",
+				"f_amp1"
+			],
+			[
+				"fr",
+				"freq"
+			],
+			[
+				"printf",
+				"printf\tprintf …"
+			],
+			[
+				"key",
+				"keys"
+			],
+			[
+				"fo",
+				"for\tfor …"
+			],
+			[
+				"s",
+				"s1"
+			],
+			[
+				"bas",
+				"base_convert"
+			],
+			[
+				"dech",
+				"dechex"
+			],
+			[
+				"file",
+				"fileName"
+			],
+			[
+				"fi",
+				"fileArray"
+			],
+			[
+				"fileN",
+				"fileNameLowerCase"
+			],
+			[
+				"fil",
+				"filename"
+			],
+			[
+				"fin",
+				"find_file"
+			],
+			[
+				"pa",
+				"path"
+			],
+			[
+				"e",
+				"empty"
+			],
+			[
+				"arr",
+				"array"
+			],
+			[
+				"se",
+				"search_paths"
+			],
+			[
+				"att",
+				"attachments"
+			],
+			[
+				"quat",
+				"quoted_printable_decode"
+			],
+			[
+				"atta",
+				"attachments"
+			],
+			[
+				"msg",
+				"msgNo"
+			],
+			[
+				"m",
+				"message"
+			],
+			[
+				"ms",
+				"msg"
+			],
+			[
+				"imap_m",
+				"imap_msg"
+			],
+			[
+				"end",
+				"end"
+			],
+			[
+				"func",
+				"function"
+			],
+			[
+				"iss",
+				"isset"
+			],
+			[
+				"Benja",
+				"benjamin"
+			],
+			[
+				"imap",
+				"imap_body"
+			],
+			[
+				"r",
+				"requester"
+			],
+			[
+				"ar",
+				"array"
+			],
+			[
+				"uns",
+				"unset"
+			],
+			[
+				"send",
+				"send_mail"
+			],
+			[
+				"sub",
+				"subject"
+			],
+			[
+				"fon",
+				"font-size"
+			],
+			[
+				"margin",
+				"margin"
+			],
+			[
+				"onc",
+				"onclick\tAttr"
+			],
+			[
+				"mar",
+				"margin-top"
+			],
+			[
+				"w",
+				"wlan0"
+			],
+			[
+				"start",
+				"startSeedBox"
+			],
+			[
+				"tra",
+				"Transmission"
+			],
+			[
+				"Add",
+				"Adding"
+			],
+			[
+				"instal",
+				"Installing"
+			],
+			[
+				"ba",
+				"bak"
+			],
+			[
+				"d",
+				"dnsmasq"
+			],
+			[
+				"base",
+				"base64_decode"
+			],
+			[
+				"fileg",
+				"file_get_contents"
+			],
+			[
+				"do",
+				"download-dir"
+			],
+			[
+				"con",
+				"content"
+			],
+			[
+				"strto",
+				"strtoupper"
+			],
+			[
+				"led",
+				"ledPwm"
+			],
+			[
+				"curr",
+				"currentLed"
+			],
+			[
+				"joy",
+				"joyRight"
+			],
+			[
+				"mon",
+				"monOeuf"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "Test_177_Test_OSV2et3_Complet.cpp",
+			"settings":
+			{
+				"buffer_size": 28787,
+				"encoding": "Western (Windows 1252)",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Users/benja/Documents/Projet_Dorian/My Documents/Aide_Oregon_XBee_HC12_Nextion/Test_177_Test_OSV2et3_Complet.cpp",
+			"settings":
+			{
+				"buffer_size": 29317,
+				"encoding": "Western (Windows 1252)",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Users/benja/Documents/Projet_Dorian/My Documents/Aide_Oregon_XBee_HC12_Nextion/Exemple_Code.cpp",
+			"settings":
+			{
+				"buffer_size": 3136,
+				"encoding": "Western (Windows 1252)",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "main.cpp",
+			"settings":
+			{
+				"buffer_size": 1614,
+				"line_ending": "Windows"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/C++/C++ Single File.sublime-build",
+					""
+				],
+				[
+					"Packages/C++/C++ Single File.sublime-build",
+					"Run"
+				]
+			],
+			[
+				"Packages/C++/C++ Single File.sublime-build",
+				""
+			]
+		],
+		[
+			[
+				[
+					"Packages/Python/Python.sublime-build",
+					""
+				],
+				[
+					"Packages/Python/Python.sublime-build",
+					"Syntax Check"
+				]
+			],
+			[
+				"Packages/Python/Python.sublime-build",
+				""
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 375.0,
+		"last_filter": "theme",
+		"selected_items":
+		[
+			[
+				"theme",
+				"UI: Select Theme"
+			],
+			[
+				"color",
+				"UI: Select Color Scheme"
+			],
+			[
+				"rp",
+				"Package Control: Remove Package"
+			],
+			[
+				"TEXT",
+				"Text Pastry: From 1 To X"
+			],
+			[
+				"hex",
+				"HexViewer: Toggle Hex View"
+			],
+			[
+				"wo",
+				"Word Wrap: Toggle"
+			],
+			[
+				"ip",
+				"Package Control: Install Package"
+			],
+			[
+				"rem",
+				"Package Control: Remove Package"
+			],
+			[
+				"te",
+				"Text Pastry: From 1 To X"
+			],
+			[
+				"tex",
+				"Text Pastry: From 0 To X"
+			],
+			[
+				"remo",
+				"Package Control: Remove Package"
+			],
+			[
+				"text Pastry from 1 to ",
+				"Text Pastry: From 1 To X"
+			],
+			[
+				"text",
+				"Text Pastry: From 1 To X"
+			],
+			[
+				"from",
+				"Text Pastry: From 1 To X"
+			],
+			[
+				"he",
+				"HexViewer: Toggle Hex View"
+			],
+			[
+				"ra",
+				"Raw Line Edit: Toggle"
+			],
+			[
+				"h",
+				"HexViewer: Toggle Hex View"
+			],
+			[
+				"ma",
+				"Markdown Preview: Save to HTML"
+			],
+			[
+				"di",
+				"FileDiffs: Menu"
+			],
+			[
+				"mark",
+				"Markdown Preview: Preview in Browser"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"package",
+				"Package Control: Install Package"
+			],
+			[
+				"mar",
+				"Markdown Preview: Preview in Browser"
+			],
+			[
+				"in",
+				"Package Control: Install Package"
+			],
+			[
+				"install ",
+				"Colorsublime: Install Theme"
+			],
+			[
+				"inst",
+				"Colorsublime: Install Theme"
+			]
+		],
+		"width": 568.0
+	},
+	"console":
+	{
+		"height": 287.0,
+		"history":
+		[
+			"cmd",
+			"compiler",
+			"cmd"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/C/Users/benja/OneDrive/Documents/Projet/Teensy_Projet_Tomates"
+	],
+	"file_history":
+	[
+		"/C/Users/benja/Documents/Projet_Dorian/My Documents/Aide_Oregon_XBee_HC12_Nextion/Test_78_RS232_433_Change_f_AT_Sleep_HC12.cpp",
+		"/C/Users/benja/OneDrive/Documents/Projet/Teensy_Projet_Tomates/main.cpp",
+		"/C/Users/benja/OneDrive/Documents/Projet/Teensy_Projet_Tomates/Teensy_Projet_Tomates.uvoptx",
+		"/C/Users/benja/OneDrive/Documents/Projet/Teensy_Projet_Tomates/Teensy_Projet_Tomates.uvprojx",
+		"/C/Users/benja/OneDrive/Documents/Projet/Teensy_Projet_Tomates/mbed_config.h",
+		"/C/Users/benja/OneDrive/Documents/Projet/Teensy_Projet_Tomates/mbed.h",
+		"/C/Users/benja/OneDrive/Documents/Projet/Teensy_Projet_Tomates/main - Copie.cpp",
+		"/C/Users/benja/Documents/Projet_Dorian/programmes/Teensy_MBED_BLINKY/bouts_de_code.cpp",
+		"/Y/Documents_Information/Aide_Oregon_XBee_HC12_Nextion/Exemple_Code.cpp",
+		"/C/Users/benja/Documents/Projet_Dorian/programmes/Teensy_MBED_BLINKY/main.cpp",
+		"/C/Users/benja/Documents/Projet_Dorian/programmes/Teensy_MBED_BLINKY/Teensy_MBED_BLINKY.uvprojx",
+		"/C/Users/benja/Documents/Projet_Dorian/programmes/Teensy_MBED_BLINKY/BUILD/Teensy_MBED_BLINKY.hex",
+		"/C/Users/benja/Documents/Projet_Dorian/UV/1900_uv2_click_example_v1.0.0.0/ARM/uv2_click_example.c",
+		"/C/Users/benja/Documents/Projet_Dorian/programmes/Teensy_MBED_BLINKY/Si7020/Si7020.h",
+		"/C/Users/benja/Documents/Projet_Dorian/programmes/Teensy_MBED_BLINKY/Si7020/Si7020.cpp",
+		"/C/Users/benja/Documents/Projet_Dorian/UV/1900_uv2_click_example_v1.0.0.0/ARM/resources.h",
+		"/C/Users/benja/Documents/Projet_Dorian/programmes/Teensy_MBED_BLINKY/HDC1080.h",
+		"/C/Users/benja/Documents/Projet_Dorian/programmes/Teensy_MBED_BLINKY/HDC1080.cpp",
+		"/C/Users/benja/Documents/Projet_Dorian/programmes/Teensy_MBED_BLINKY/mbed.h",
+		"/C/Users/benja/Documents/Projet_Dorian/programmes/Teensy_MBED_BLINKY/mbed-src/api/mbed.h",
+		"/C/Users/benja/Documents/Projet_Dorian/programmes/Teensy_MBED_BLINKY/BUILD/bmp280.d",
+		"/C/Users/benja/Documents/Projet_Dorian/programmes/Teensy_MBED_BLINKY/BUILD/bmp280_1.d",
+		"/C/Users/benja/Documents/Projet_Dorian/programmes/Teensy_MBED_BLINKY/BUILD/bmp280_1.o",
+		"/C/Users/benja/Documents/Projet_Dorian/programmes/Teensy_MBED_BLINKY/BUILD/bmp280_1.crf",
+		"/C/Users/benja/Documents/Projet_Dorian/programmes/Teensy_MBED_BLINKY/mbed_config.h",
+		"/C/Users/benja/Documents/Projet_Dorian/programmes/Teensy_MBED_BLINKY/kinetis_flexcan.h",
+		"/C/Users/benja/Documents/Projet_Dorian/programmes/Teensy_MBED_BLINKY/OneWire.lib",
+		"/C/Users/benja/Documents/Projet_Dorian/programmes/Teensy_MBED_BLINKY/mbed-src.lib",
+		"/C/Users/benja/Documents/Projet_Dorian/programmes/Teensy_MBED_BLINKY/main.h",
+		"/C/Users/benja/Documents/Projet_Dorian/programmes/Teensy_MBED_BLINKY/teensy_benji.cpp",
+		"/C/Users/benja/Documents/Projet_Dorian/programmes/Teensy_MBED_BLINKY/main_CAN_MCP9700T.cpp",
+		"/C/Users/benja/Documents/Projet_Dorian/programmes/Teensy_MBED_BLINKY/onewire.cpp",
+		"/C/Users/benja/Documents/BTS2_Electronique_Programmation/Teensy_MBED_BLINKY/teensy_benji.cpp",
+		"/C/Users/benja/Documents/BTS2_Electronique_Programmation/Teensy_MBED_BLINKY/main_CAN_MCP9700T.cpp",
+		"/C/Users/benja/Documents/BTS2_Electronique_Programmation/Teensy_MBED_BLINKY/main.cpp",
+		"/C/Users/benja/Documents/Electronique/xBee/mbed_TS1/main.cpp",
+		"/C/Users/benja/Desktop/onewire.cpp",
+		"/C/Users/benja/Desktop/test.p7b",
+		"/C/Users/benja/Documents/Certificat_Dorian_AC-Paris.cer",
+		"/C/Users/benja/Documents/Certificat_Dorian_AC-Paris.p7b",
+		"/C/Users/benja/Documents/Electronique/xBee/mbed_TS1/mbed/mbed.h",
+		"/W/Shared/Script/Windows Registry Hack/powershell_context_menu.reg",
+		"/C/Users/benja/OneDrive/Documents/RaspberryPi/pifi.sh",
+		"/C/Users/benja/OneDrive/Documents/elec_shorcut/dorian_id_elec.txt",
+		"/C/Users/benja/Desktop/commande_AT.cpp",
+		"/C/Users/benja/Desktop/commande_AT - Copie.cpp",
+		"/D/Nouveau document texte.txt",
+		"/C/Users/benja/Documents/Electronique/carte_doriane/mbed_TS1/main.cpp",
+		"/C/Users/benja/Desktop/test.mfd",
+		"/C/Users/benja/Downloads/dump.mfd",
+		"/C/Users/benja/Desktop/rallye.html",
+		"/C/Users/benja/Desktop/base.html",
+		"/C/Users/benja/Desktop/index.php",
+		"/C/Users/benja/AppData/Local/Temp/fz3temp-2/index.php",
+		"/C/Users/benja/Desktop/menu.html",
+		"/C/Users/benja/Desktop/App.php",
+		"/C/Users/benja/OneDrive/Documents/carte_doriane/mbed_TS1/main.cpp",
+		"/C/Users/benja/Documents/identifiants elec Dorian.txt",
+		"/C/Users/benja/OneDrive/Documents/elec_shorcut/test.bat",
+		"/C/Users/benja/Desktop/dorian_id_elec.txt",
+		"/C/Users/benja/Desktop/test.cmd",
+		"/C/Users/benja/Desktop/Nouveau document texte.txt",
+		"/C/Users/benja/Desktop/cfase2b12 (192.168.200.2) - Raccourci.lnk",
+		"/C/Users/benja/Desktop/extended-std.keys",
+		"/C/Users/benja/Desktop/MiFare_keygen/keys/key-0.txt",
+		"/C/cmder/bin/php5.bat",
+		"/C/Users/benja/Desktop/MiFare_keygen/MiFare_keygen.php",
+		"/D/com-cfa2/_save/aff/scanner/scanner.ino",
+		"/C/php5/php.ini",
+		"/C/Users/benja/Desktop/MiFare_keygen/test2.php",
+		"/C/Users/benja/Desktop/MiFare_keygen/test/key_.txt",
+		"/C/Users/benja/Desktop/test.php",
+		"/C/Users/benja/Desktop/test2.php",
+		"/C/Users/benja/Desktop/MiFare_keygen_2.php",
+		"/C/Users/benja/Desktop/MiFare_keygen_1.php",
+		"/C/Users/benja/OneDrive/Documents/RaspberryPi/Commandes linux.txt",
+		"/C/Users/benja/Desktop/pifi.sh",
+		"/C/Users/benja/Desktop/pifi (1).sh",
+		"/C/Users/benja/Downloads/pifi.sh",
+		"/W/Torrent/Code Lyoko série complète DVDrip x264/Liste des épisodes.txt",
+		"/C/Program Files (x86)/Ubisoft/Ubisoft Game Launcher/crashes/upc.exe_38.2.0.5397_2017-09-08_09-29-53.dmp",
+		"/C/Program Files (x86)/Ubisoft/Ubisoft Game Launcher/crashes/upc.exe_38.2.0.5397_2017-09-08_09-30-40.dmp",
+		"/C/Users/benja/Desktop/key_1 - Copie (2).txt",
+		"/C/Users/benja/OneDrive/Documents/RaspberryPi/config samba.txt",
+		"/C/Users/benja/Documents/Arduino/test_pianoTiles/test_pianoTiles.ino",
+		"/D/(000) [NRJ Winter Hits 2014] 1nDD.m3u",
+		"/D/(100) [NRJ Winter Hits 2014] 1nDD.m3u",
+		"/C/Users/benja/Desktop/key_1.txt",
+		"/C/Users/benja/Desktop/key_2.txt",
+		"/C/Users/benja/Desktop/key_1 - Copie.txt",
+		"/C/Users/benja/OneDrive/Documents/RaspberryPi/mail/PiMail.php",
+		"/C/php/php.ini",
+		"/C/Users/benja/Documents/cuir_un_oeuf/cuir_un_oeuf.bin",
+		"/C/Users/benja/AppData/Roaming/FileZilla/sitemanager.xml",
+		"/C/Program Files (x86)/Opera/installation_status.xml",
+		"/C/Users/benja/Desktop/desactiver prefetch.reg",
+		"/C/Users/benja/Documents/Arduino/test_7_seg/test_7_seg.ino",
+		"/C/Users/benja/Downloads/google.csv",
+		"/C/Users/benja/Downloads/google (1).csv",
+		"/C/Users/benja/Downloads/Silicon.Valley.S04E10.INTERNAL.720p.HDTV.x264-aAF.srt",
+		"/C/Users/benja/Desktop/send.html",
+		"/C/Users/benja/AppData/Local/Temp/fz3temp-2/index.html",
+		"/C/Users/benja/AppData/Local/Temp/fz3temp-2/App.php",
+		"/C/Users/benja/AppData/Local/Temp/fz3temp-2/send.html",
+		"/C/Users/benja/AppData/Local/Temp/fz3temp-2/index 2.php",
+		"/C/Users/benja/AppData/Local/Temp/fz3temp-2/zip.html",
+		"/C/Users/benja/index.php",
+		"/C/Users/benja/Desktop/736.cnamts (1).pdf",
+		"/C/Users/benja/Desktop/test.sh",
+		"/C/Users/benja/AppData/Local/Temp/fz3temp-2/index 3.php",
+		"/C/Users/benja/Downloads/0842538C0231499714571451.tsv",
+		"/C/Program Files (x86)/Opera/pref_default_overrides",
+		"/C/Users/benja/Desktop/Hotfix.torrent",
+		"/C/Windows/System32/drivers/etc/hosts",
+		"/C/windows/system32/drivers/etc/host",
+		"/C/Users/benja/Downloads/ei.cfg",
+		"/C/Users/benja/OneDrive/Documents/RaspberryPi/mail/class/class.phpmailer.php",
+		"/C/Users/benja/OneDrive/Documents/RaspberryPi/mail/PHPMailerAutoload.php",
+		"/C/Users/benja/OneDrive/Documents/RaspberryPi/make_remote_access_page.sh",
+		"/C/Users/benja/OneDrive/Documents/RaspberryPi/get_ip.sh",
+		"/C/Users/benja/OneDrive/Documents/RaspberryPi/PHPMailerAutoload.php",
+		"/C/Users/benja/OneDrive/Documents/RaspberryPi/mail_test.php",
+		"/C/Users/benja/OneDrive/Documents/RaspberryPi/mail_test.py",
+		"/C/Users/benja/OneDrive/Documents/RaspberryPi/class.phpmailer.php",
+		"/C/Users/benja/OneDrive/Documents/RaspberryPi/test.html",
+		"/C/Users/benja/OneDrive/Documents/RaspberryPi/test.php",
+		"/C/Users/benja/OneDrive/Documents/RaspberryPi/index.php",
+		"/C/Users/benja/OneDrive/Documents/RaspberryPi/seedbox.sh"
+	],
+	"find":
+	{
+		"height": 51.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"]=",
+			"\t|\n",
+			"\t| |\n",
+			"\t| |",
+			"=[a-zA-A0-9]",
+			"[a-zA-A0-9]=",
+			"[^ =|*+!]=",
+			"[^ =]=",
+			"(?! )=(?! )",
+			"\t",
+			",(?! )",
+			"\t",
+			"Wake",
+			"    ",
+			"I2C_ADDR",
+			"void .* readRegs",
+			"void * readRegs",
+			"readRegs",
+			"I2C1_Write",
+			"hdc_i2c",
+			".",
+			"BMP280",
+			"address",
+			"oneWireGetByte",
+			"oneWireSetByte",
+			"oneWireSet_1_bit",
+			"oneWireGet_1_bit",
+			"oneWireOut",
+			"oneWireIn",
+			"sensor_9700",
+			"1_wire",
+			"capt_1_wire",
+			"\t",
+			"tab_Mo",
+			"answer_XBee",
+			"Send_ATcommand_XBee",
+			"ffff ffff ffff",
+			"b",
+			" ",
+			"init_pot",
+			"prog_F_phi",
+			"_clk_dds",
+			"phase._cfg >> 1",
+			"dds.",
+			"cfase2b.*?\t.*?\t",
+			"ad0b",
+			"unsigned int *phase",
+			"eth0",
+			".*",
+			";",
+			"111111Ffff",
+			"Saintraix",
+			"  ",
+			"makeThumb",
+			"subject",
+			"\\",
+			"get_attachment",
+			"'name'",
+			"get_attachment",
+			"$attachment",
+			"attachment",
+			"$attachment",
+			"$inbox",
+			"head",
+			"\t ",
+			"overview",
+			"header",
+			"structure",
+			"message",
+			"recepeint_email_address",
+			"message",
+			"$inbox,$email_number",
+			"imap_msg",
+			"$mbox, $msgNo",
+			"$mbox, $msgNo, ",
+			"$head",
+			"header",
+			"overview",
+			"message",
+			"pdf",
+			"; *?//",
+			"//",
+			"; *?//",
+			"//",
+			";.*?//",
+			"plain",
+			"isHTML",
+			"mail",
+			"), ",
+			", ",
+			" ",
+			"}",
+			"ADDRESS_IP",
+			"remote_access_page",
+			"ip_redirect",
+			"'",
+			"    ",
+			"MIN_PHPVER",
+			"eth1",
+			" \\\\$",
+			"login:password@proxy.exemple.org:8080",
+			"Seedbox",
+			"SeedBox",
+			"startSeedBox",
+			"COMMENT1",
+			"SeedBox",
+			".d",
+			"$(tput setaf ",
+			"$(tput sgr0)",
+			"tput bold ; ",
+			"$(tput sgr0)",
+			"   ",
+			"mask",
+			"#",
+			"^#",
+			".sh",
+			"-",
+			"class=\"btn\"",
+			"w3-button w3-black w3-block w3-padding-16",
+			"x3-button",
+			"test.txt",
+			"/etc/transmission-daemon/settings.json",
+			"\"",
+			":",
+			"\"download-dir\":|\"incomplete-dir\":|\"incomplete-dir-enabled\":|\"rpc-password\":|\"rpc-username\":|\"rpc-whitelist-enabled\":",
+			"\"download-dir\":|\"incomplete-dir\":|\"incomplete-dir-enabled\":|\n\"rpc-password\":\n\"rpc-username\":\n\"rpc-whitelist-enabled\":",
+			":",
+			"filename"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": true,
+		"replace_history":
+		[
+			"$imap_msg[0], $imap_msg[1]",
+			"_IP_ADDRESS_",
+			"\\\\ /\\* $1 \\*/",
+			"/\\* $1 \\*/",
+			"<FilePath>../rsrc/GUIDorian/",
+			"<FilePath>../rsrc/emwin/",
+			"<FilePath>../rsrc/GUIDorian/EALib",
+			"<FilePath>../rsrc/GUIDorian/FATFileSystem",
+			"<FilePath>../rsrc/mbed/FATFileSystem",
+			"<FilePath>../rsrc/mbed/",
+			"GUIDorian_test",
+			"// $1",
+			"\\\\\\\\ $1",
+			"\\\\ $1",
+			"\\ $1",
+			"-",
+			"project"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 3,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "Test_177_Test_OSV2et3_Complet.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 28787,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								222,
+								222
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/C/Users/benja/Documents/Projet_Dorian/My Documents/Aide_Oregon_XBee_HC12_Nextion/Test_177_Test_OSV2et3_Complet.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 29317,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								654,
+								735
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 464.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/C/Users/benja/Documents/Projet_Dorian/My Documents/Aide_Oregon_XBee_HC12_Nextion/Exemple_Code.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3136,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "main.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1614,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								839,
+								839
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1537.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 43.0
+	},
+	"input":
+	{
+		"height": 51.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 358.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.hex_viewer_inspector":
+	{
+		"height": 176.0
+	},
+	"output.stino_build_panel":
+	{
+		"height": 0.0
+	},
+	"output.stino_panel":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "sublime_teensy_projet_tomates.sublime-project",
+	"replace":
+	{
+		"height": 82.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 295.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
