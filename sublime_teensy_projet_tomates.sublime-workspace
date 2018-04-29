@@ -354,7 +354,7 @@
 			"file": "main.cpp",
 			"settings":
 			{
-				"buffer_size": 1614,
+				"buffer_size": 1612,
 				"line_ending": "Windows"
 			}
 		}
@@ -398,10 +398,18 @@
 	"build_varint": "",
 	"command_palette":
 	{
-		"height": 375.0,
-		"last_filter": "theme",
+		"height": 229.0,
+		"last_filter": "gitig",
 		"selected_items":
 		[
+			[
+				"gitig",
+				"Gitignore: New gitignore"
+			],
+			[
+				"ip",
+				"Package Control: Install Package"
+			],
 			[
 				"theme",
 				"UI: Select Theme"
@@ -425,10 +433,6 @@
 			[
 				"wo",
 				"Word Wrap: Toggle"
-			],
-			[
-				"ip",
-				"Package Control: Install Package"
 			],
 			[
 				"rem",
@@ -507,7 +511,7 @@
 				"Colorsublime: Install Theme"
 			]
 		],
-		"width": 568.0
+		"width": 408.0
 	},
 	"console":
 	{
@@ -534,10 +538,14 @@
 	],
 	"file_history":
 	[
+		"/C/Users/benja/Desktop/bookmarks.html",
+		"/C/Users/benja/Desktop/bookmarks2.html",
+		"/C/Users/benja/Desktop/bookmarks_29_04_2018.html",
+		"/C/Users/benja/OneDrive/Documents/Projet/Teensy_Projet_Tomates/.gitignore",
+		"/C/Users/benja/OneDrive/Documents/Projet/Teensy_Projet_Tomates/Teensy_Projet_Tomates.uvprojx",
 		"/C/Users/benja/Documents/Projet_Dorian/My Documents/Aide_Oregon_XBee_HC12_Nextion/Test_78_RS232_433_Change_f_AT_Sleep_HC12.cpp",
 		"/C/Users/benja/OneDrive/Documents/Projet/Teensy_Projet_Tomates/main.cpp",
 		"/C/Users/benja/OneDrive/Documents/Projet/Teensy_Projet_Tomates/Teensy_Projet_Tomates.uvoptx",
-		"/C/Users/benja/OneDrive/Documents/Projet/Teensy_Projet_Tomates/Teensy_Projet_Tomates.uvprojx",
 		"/C/Users/benja/OneDrive/Documents/Projet/Teensy_Projet_Tomates/mbed_config.h",
 		"/C/Users/benja/OneDrive/Documents/Projet/Teensy_Projet_Tomates/mbed.h",
 		"/C/Users/benja/OneDrive/Documents/Projet/Teensy_Projet_Tomates/main - Copie.cpp",
@@ -657,15 +665,11 @@
 		"/C/Users/benja/OneDrive/Documents/RaspberryPi/PHPMailerAutoload.php",
 		"/C/Users/benja/OneDrive/Documents/RaspberryPi/mail_test.php",
 		"/C/Users/benja/OneDrive/Documents/RaspberryPi/mail_test.py",
-		"/C/Users/benja/OneDrive/Documents/RaspberryPi/class.phpmailer.php",
-		"/C/Users/benja/OneDrive/Documents/RaspberryPi/test.html",
-		"/C/Users/benja/OneDrive/Documents/RaspberryPi/test.php",
-		"/C/Users/benja/OneDrive/Documents/RaspberryPi/index.php",
-		"/C/Users/benja/OneDrive/Documents/RaspberryPi/seedbox.sh"
+		"/C/Users/benja/OneDrive/Documents/RaspberryPi/class.phpmailer.php"
 	],
 	"find":
 	{
-		"height": 51.0
+		"height": 48.0
 	},
 	"find_in_files":
 	{
@@ -679,6 +683,9 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			";",
+			"IncludePath",
+			"include",
 			"]=",
 			"\t|\n",
 			"\t| |\n",
@@ -803,10 +810,7 @@
 			"/etc/transmission-daemon/settings.json",
 			"\"",
 			":",
-			"\"download-dir\":|\"incomplete-dir\":|\"incomplete-dir-enabled\":|\"rpc-password\":|\"rpc-username\":|\"rpc-whitelist-enabled\":",
-			"\"download-dir\":|\"incomplete-dir\":|\"incomplete-dir-enabled\":|\n\"rpc-password\":\n\"rpc-username\":\n\"rpc-whitelist-enabled\":",
-			":",
-			"filename"
+			"\"download-dir\":|\"incomplete-dir\":|\"incomplete-dir-enabled\":|\"rpc-password\":|\"rpc-username\":|\"rpc-whitelist-enabled\":"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -857,8 +861,8 @@
 						"selection":
 						[
 							[
-								222,
-								222
+								400,
+								400
 							]
 						],
 						"settings":
@@ -885,8 +889,8 @@
 						"selection":
 						[
 							[
-								654,
-								735
+								700,
+								700
 							]
 						],
 						"settings":
@@ -936,15 +940,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1614,
+						"buffer_size": 1612,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								839,
-								839
+								110,
+								110
 							]
 						],
 						"settings":
@@ -953,7 +957,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1537.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,

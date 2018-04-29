@@ -7,7 +7,7 @@
  * 
  */
 
-#include "./mbed.h"
+#include "mbed.h"
 
 /**
  * Definition des Variables
