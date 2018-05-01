@@ -5,13 +5,15 @@
 			"file_exclude_patterns":
 			[
 				"*.sublime-workspace",
-				// "*.sublime-project",
 				"*.uvoptx",
+				"*.uvguix.*"
+				// ".*",
 				// "*.uvprojx",
 				// "*.old",
-				// "* - Copie.*"
+				// "* - Copie.*",
 			],
 			"path": "."
 		}
 	]
 }
+

@@ -1,5 +1,6 @@
 /**
- * @file main.cpp
+ * Projet Tomates
+ * Teensy 3.2
  * 
  * @author Benjamin LEBLOND <benjamin.leblond@orange.fr>
  * 
@@ -8,6 +9,8 @@
  */
 
 #include "mbed.h"
+#include "HC12.h"
+#include "OSV2_OSV3.h"
 
 /**
  * Definition des Variables
@@ -42,6 +45,13 @@ int main(void)
 	FTDI.baud(9600);
 	pump_it.mode(PullNone);
 	pump_it.rise(&turn_pump_on);
+
+	HC12 UnionOSV3;
+	UnionOSV3.Data_Capteur.HeureAcqui = time(NULL);
+	UnionOSV3.Data_Capteur.type_capteur = THN132N; //valeur 3 dans enum
+	UnionOSV3.Data_Capteur.Temperature = 12.5;
+	UnionOSV3.Data_Capteur.HR = 33;
+	UnionOSV3.Data_Capteur.numero = 1;
 
 	sayHello();
 

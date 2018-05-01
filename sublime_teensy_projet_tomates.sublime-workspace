@@ -4,6 +4,18 @@
 		"selected_items":
 		[
 			[
+				"pu",
+				"pump_timeout"
+			],
+			[
+				"pump",
+				"pump_int"
+			],
+			[
+				"wat",
+				"water_lvl_timeout"
+			],
+			[
 				"Start",
 				"startSequence"
 			],
@@ -324,37 +336,11 @@
 	"buffers":
 	[
 		{
-			"file": "Test_177_Test_OSV2et3_Complet.cpp",
-			"settings":
-			{
-				"buffer_size": 28787,
-				"encoding": "Western (Windows 1252)",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/Users/benja/Documents/Projet_Dorian/My Documents/Aide_Oregon_XBee_HC12_Nextion/Test_177_Test_OSV2et3_Complet.cpp",
-			"settings":
-			{
-				"buffer_size": 29317,
-				"encoding": "Western (Windows 1252)",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/Users/benja/Documents/Projet_Dorian/My Documents/Aide_Oregon_XBee_HC12_Nextion/Exemple_Code.cpp",
-			"settings":
-			{
-				"buffer_size": 3136,
-				"encoding": "Western (Windows 1252)",
-				"line_ending": "Windows"
-			}
-		},
-		{
 			"file": "main.cpp",
 			"settings":
 			{
 				"buffer_size": 1612,
+				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		}
@@ -398,30 +384,10 @@
 	"build_varint": "",
 	"command_palette":
 	{
-		"height": 229.0,
-		"last_filter": "gitig",
+		"height": 375.0,
+		"last_filter": "TEXT",
 		"selected_items":
 		[
-			[
-				"gitig",
-				"Gitignore: New gitignore"
-			],
-			[
-				"ip",
-				"Package Control: Install Package"
-			],
-			[
-				"theme",
-				"UI: Select Theme"
-			],
-			[
-				"color",
-				"UI: Select Color Scheme"
-			],
-			[
-				"rp",
-				"Package Control: Remove Package"
-			],
 			[
 				"TEXT",
 				"Text Pastry: From 1 To X"
@@ -433,6 +399,14 @@
 			[
 				"wo",
 				"Word Wrap: Toggle"
+			],
+			[
+				"rp",
+				"Package Control: Remove Package"
+			],
+			[
+				"ip",
+				"Package Control: Install Package"
 			],
 			[
 				"rem",
@@ -511,7 +485,7 @@
 				"Colorsublime: Install Theme"
 			]
 		],
-		"width": 408.0
+		"width": 568.0
 	},
 	"console":
 	{
@@ -538,17 +512,15 @@
 	],
 	"file_history":
 	[
-		"/C/Users/benja/Desktop/bookmarks.html",
-		"/C/Users/benja/Desktop/bookmarks2.html",
-		"/C/Users/benja/Desktop/bookmarks_29_04_2018.html",
-		"/C/Users/benja/OneDrive/Documents/Projet/Teensy_Projet_Tomates/.gitignore",
-		"/C/Users/benja/OneDrive/Documents/Projet/Teensy_Projet_Tomates/Teensy_Projet_Tomates.uvprojx",
-		"/C/Users/benja/Documents/Projet_Dorian/My Documents/Aide_Oregon_XBee_HC12_Nextion/Test_78_RS232_433_Change_f_AT_Sleep_HC12.cpp",
-		"/C/Users/benja/OneDrive/Documents/Projet/Teensy_Projet_Tomates/main.cpp",
-		"/C/Users/benja/OneDrive/Documents/Projet/Teensy_Projet_Tomates/Teensy_Projet_Tomates.uvoptx",
+		"/E/WWW/elodie-thomas.ga/public_html/index.php",
+		"/H/Adobe Acrobat Pro DC 2017.012.20095 Setup + Crack/Crack/file_id.diz",
 		"/C/Users/benja/OneDrive/Documents/Projet/Teensy_Projet_Tomates/mbed_config.h",
+		"/C/Users/benja/OneDrive/Documents/Projet/Teensy_Projet_Tomates/sublime_teensy_projet_tomates.sublime-project",
+		"/C/Users/benja/OneDrive/Documents/Projet/Teensy_Projet_Tomates/Teensy_Projet_Tomates.uvoptx",
+		"/C/Users/benja/OneDrive/Documents/Projet/Teensy_Projet_Tomates/Teensy_Projet_Tomates.uvprojx",
 		"/C/Users/benja/OneDrive/Documents/Projet/Teensy_Projet_Tomates/mbed.h",
 		"/C/Users/benja/OneDrive/Documents/Projet/Teensy_Projet_Tomates/main - Copie.cpp",
+		"/C/Users/benja/OneDrive/Documents/Projet/Teensy_Projet_Tomates/main.cpp",
 		"/C/Users/benja/Documents/Projet_Dorian/programmes/Teensy_MBED_BLINKY/bouts_de_code.cpp",
 		"/Y/Documents_Information/Aide_Oregon_XBee_HC12_Nextion/Exemple_Code.cpp",
 		"/C/Users/benja/Documents/Projet_Dorian/programmes/Teensy_MBED_BLINKY/main.cpp",
@@ -665,11 +637,13 @@
 		"/C/Users/benja/OneDrive/Documents/RaspberryPi/PHPMailerAutoload.php",
 		"/C/Users/benja/OneDrive/Documents/RaspberryPi/mail_test.php",
 		"/C/Users/benja/OneDrive/Documents/RaspberryPi/mail_test.py",
-		"/C/Users/benja/OneDrive/Documents/RaspberryPi/class.phpmailer.php"
+		"/C/Users/benja/OneDrive/Documents/RaspberryPi/class.phpmailer.php",
+		"/C/Users/benja/OneDrive/Documents/RaspberryPi/test.html",
+		"/C/Users/benja/OneDrive/Documents/RaspberryPi/test.php"
 	],
 	"find":
 	{
-		"height": 48.0
+		"height": 37.0
 	},
 	"find_in_files":
 	{
@@ -683,21 +657,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
-			";",
-			"IncludePath",
-			"include",
-			"]=",
-			"\t|\n",
-			"\t| |\n",
-			"\t| |",
-			"=[a-zA-A0-9]",
-			"[a-zA-A0-9]=",
-			"[^ =|*+!]=",
-			"[^ =]=",
-			"(?! )=(?! )",
-			"\t",
-			",(?! )",
-			"\t",
+			"int",
 			"Wake",
 			"    ",
 			"I2C_ADDR",
@@ -810,12 +770,26 @@
 			"/etc/transmission-daemon/settings.json",
 			"\"",
 			":",
-			"\"download-dir\":|\"incomplete-dir\":|\"incomplete-dir-enabled\":|\"rpc-password\":|\"rpc-username\":|\"rpc-whitelist-enabled\":"
+			"\"download-dir\":|\"incomplete-dir\":|\"incomplete-dir-enabled\":|\"rpc-password\":|\"rpc-username\":|\"rpc-whitelist-enabled\":",
+			"\"download-dir\":|\"incomplete-dir\":|\"incomplete-dir-enabled\":|\n\"rpc-password\":\n\"rpc-username\":\n\"rpc-whitelist-enabled\":",
+			":",
+			"filename",
+			"$key",
+			" ",
+			"\t",
+			"\n",
+			"\\[(\n.*)*",
+			"\\[",
+			"\".PHP_EOL",
+			" ",
+			".phar",
+			"EwWindow",
+			"frame"
 		],
 		"highlight": true,
 		"in_selection": false,
 		"preserve_case": false,
-		"regex": true,
+		"regex": false,
 		"replace_history":
 		[
 			"$imap_msg[0], $imap_msg[1]",
@@ -845,97 +819,11 @@
 	"groups":
 	[
 		{
-			"selected": 3,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "Test_177_Test_OSV2et3_Complet.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 28787,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								400,
-								400
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "/C/Users/benja/Documents/Projet_Dorian/My Documents/Aide_Oregon_XBee_HC12_Nextion/Test_177_Test_OSV2et3_Complet.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 29317,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								700,
-								700
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 464.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "/C/Users/benja/Documents/Projet_Dorian/My Documents/Aide_Oregon_XBee_HC12_Nextion/Exemple_Code.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3136,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
 					"file": "main.cpp",
 					"semi_transient": false,
 					"settings":
@@ -947,8 +835,8 @@
 						"selection":
 						[
 							[
-								110,
-								110
+								808,
+								808
 							]
 						],
 						"settings":
@@ -957,7 +845,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1428.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -968,7 +856,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 43.0
+		"height": 37.0
 	},
 	"input":
 	{
@@ -1021,7 +909,7 @@
 	"project": "sublime_teensy_projet_tomates.sublime-project",
 	"replace":
 	{
-		"height": 82.0
+		"height": 70.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -1059,7 +947,7 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 295.0,
+	"side_bar_width": 246.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{
