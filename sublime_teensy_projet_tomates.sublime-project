@@ -7,13 +7,8 @@
 				"*.sublime-workspace",
 				"*.uvoptx",
 				"*.uvguix.*"
-				// ".*",
-				// "*.uvprojx",
-				// "*.old",
-				// "* - Copie.*",
 			],
 			"path": "."
 		}
 	]
 }
-

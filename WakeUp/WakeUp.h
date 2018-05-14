@@ -1,5 +1,3 @@
-#include "mbed.h"
-
 /**
  * Class to make wake up a microcontroller from deepsleep using a low-power timer. 
  *
@@ -36,6 +34,12 @@
  * }
  * @endcode
  */
+
+#ifndef WAKEUP_H
+#define WAKEUP_H
+
+#include "mbed.h"
+
 class WakeUp
 {
 public:
@@ -96,3 +100,6 @@ private:
     static void irq_handler(void);
     static float cycles_per_ms;
 };
+
+
+#endif

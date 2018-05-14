@@ -258,7 +258,7 @@ void serial_rx_asynch(serial_t *obj, void *rx, size_t rx_length, uint8_t rx_widt
  *
  * @param obj The serial object
  * @return Non-zero if the RX transaction is ongoing, 0 otherwise
- */
+ */²
 uint8_t serial_tx_active(serial_t *obj);
 
 /** Attempts to determine if the serial peripheral is already in use for RX

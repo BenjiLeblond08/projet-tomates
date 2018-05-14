@@ -49,9 +49,9 @@
 #define HC12_RESP_OK ("OK")
 #define HC12_AT	"AT"
 #define HC12_ERROR	"ERROR"
-//Taille maximale de 60 octets en mode FU4 pour envoyer des donnÃ©es
+//Taille maximale de 60 octets en mode FU4 pour envoyer des données
 //Ici buffer pour la configuration : min de 8 (AT+Bxxxx) et en plus CR (HC12_END_CMD) en fin de commande
-//41 octets au minimum pour recevoir la reponse Ã  AT+RX
+//41 octets au minimum pour recevoir la reponse à AT+RX
 #define HC12_TAILLE_BUFFER 60	
 #define HC12_TIMEOUT	1
 //FU4 -> AT+FU4
@@ -74,7 +74,7 @@
 //Mode SLEEP
 #define HC12_SLEEP "AT+SLEEP"
 #define HC12_SLEEP_Rep "OK+SLEEP"
-//Mode DEFAULT - Reset Factory - 9600bit/s - 8bits - pas paritÃ© - 1 bit stop - communication canal 001 (433.4MHz) - Power 20dBm - FU3 
+//Mode DEFAULT - Reset Factory - 9600bit/s - 8bits - pas parité - 1 bit stop - communication canal 001 (433.4MHz) - Power 20dBm - FU3 
 #define HC12_DEFAULT "AT+DEFAULT"
 #define HC12_DEFAULT_Rep "OK+DEFAULT"
 
@@ -99,12 +99,12 @@ Serial HC_12(PTB17,PTB16);
 /////////////////////////////////////////////////////////////////////////////
 #define OSV3_CRC8_M433_GP	0x107	//x^8+x^2+x+1
 #define OSV3_CRC8_M433_DI	0x07
-//Taille du tableau pour les donnÃ©es du capteur 
-//Le capteur est temperature en Â°C et HR en % -> protocole Oregon Scientific V3 : THGR810
+//Taille du tableau pour les données du capteur 
+//Le capteur est temperature en °C et HR en % -> protocole Oregon Scientific V3 : THGR810
 #define OSV3_TAILLE_DATA_CAPTEUR_THR	13
 //Le capteur d'UV  -> protocole Oregon Scientific V3 : UVN800
 #define OSV3_TAILLE_DATA_CAPTEUR_UV	12
-//PossibilitÃ© de definir un canal de 1 Ã  15 : Oregon de 1 Ã  3
+//Possibilité de definir un canal de 1 à 15 : Oregon de 1 à 3
 #define OSV3_CANAL_TEMP_HR	2
 #define OSV3_CANAL_HAUTEUR_EAU 3
 #define OSV3_CANAL_UV 9
@@ -141,7 +141,7 @@ DigitalOut LED_ON_Off(PTC5,0);
 // Objet la Gestion du 433MHz en Manchester
 /////////////////////////////////////////////////////////////////////////////
 Timer TimeManchester;
-//EntrÃ©e analogique pour le CAN
+//Entrée analogique pour le CAN
 AnalogIn AIN(PTC8);
 /////////////////////////////////////////////////////////////////////////////
 // Sortie pour l'emission de la data en 433.92MHz
@@ -158,7 +158,7 @@ DigitalOut POWER(PTD7,0);
 
 
 
-//Variables modifiÃ©es par la fonction d'IT
+//Variables modifiées par la fonction d'IT
 //Pour l'IT toutes les 30s
 volatile bool FLAG_IT_MESURE=true;
 
@@ -225,9 +225,9 @@ void calculateAndSetChecksum_THRP(unsigned char *data);
 // 	packet[2] = 0xFF;
 //  packet[3] = 0xAD;
 //  packet[4] = 0x87;
-//  packet[5] = 0x41;		 //canal (1 Ã  15) : 4 bits de poids faible pour la valeur  
+//  packet[5] = 0x41;		 //canal (1 à 15) : 4 bits de poids faible pour la valeur  
 //  packet[6] = 0x64;    //rolling code
-//  packet[7] = 0x80;		 //4 bits de poids faible pour la valeur des UV (0 Ã  15)
+//  packet[7] = 0x80;		 //4 bits de poids faible pour la valeur des UV (0 à 15)
 //  packet[8] = 0x0D;
 //  packet[9] = 0x60;
 //  packet[10] = 0x64;   // checksum
@@ -299,7 +299,7 @@ typedef struct {
 
 typedef union {
 								T_DB Data_Capteur;
-								char Tab_TU[sizeof(T_DB)]; //meme taille que T_DB et au mÃªme emplacement mÃ©moire.
+								char Tab_TU[sizeof(T_DB)]; //meme taille que T_DB et au même emplacement mémoire.
 	
 							} TU_DB;
 
@@ -312,11 +312,11 @@ volatile TU_DB Tab_OSV23Binaire;
 int main(void) 
 {
 
-	//Mise Ã  l'heure
+	//Mise à l'heure
 	//Variables pour la gestion de l'horloge RTC
-	//Gestion de l'heure associÃ©e Ã  l'horloge RTC
+	//Gestion de l'heure associée à l'horloge RTC
 	struct tm mytime;
-	//PrÃ© configuration de l'horloge -> Year Month Day
+	//Pré configuration de l'horloge -> Year Month Day
 	mytime.tm_year=ANNEE-1900;
 	mytime.tm_mon=MOIS_ANNEE-1;
 	mytime.tm_mday=JOUR_SEMAINE_1_31;
@@ -326,7 +326,7 @@ int main(void)
 	mytime.tm_sec=30;
 	//Variable pour obtenir l'heure
 	time_t seconds;
-	//Mise Ã  l'heure de l'horloge RTC
+	//Mise à l'heure de l'horloge RTC
 	set_time(mktime(&mytime));
 	
 	//Configuration vitesse FTDI
@@ -456,7 +456,7 @@ int main(void)
 
 			//Visualisation entree en IT
 			LED_ON_Off=!LED_ON_Off;
-			//Afichage des infos reÃ§ues
+			//Afichage des infos reçues
 			FTDI.printf("\r\n");
 
 			time_t OSV3_Time = *( (time_t*)(Tab_OSV23Binaire.Tab_TU) );
@@ -477,7 +477,7 @@ int main(void)
 			T_Enum OSV3_type_capteur = *( (T_Enum*)(Tab_OSV23Binaire.Tab_TU + 32) );
 			FTDI.printf("\r\n OSV3_type_capteur=%d\r\n",OSV3_type_capteur);
 
-			//Affichage sous forme hexa des donnees reÃ§ues
+			//Affichage sous forme hexa des donnees reçues
 			FTDI.printf("\r\n");
 			for (int i=0 ; i<sizeof(T_DB) ; i++)
 			{
@@ -485,7 +485,7 @@ int main(void)
 			}
 			FTDI.printf("\r\n");
 			
-			//Affichage du type de capteur reÃ§u
+			//Affichage du type de capteur reçu
 			FTDI.printf("\r\ntype_capteur=%d",Tab_OSV23Binaire.Data_Capteur.type_capteur);
 			
 			//Test du capteur pour encodage :
@@ -502,7 +502,7 @@ int main(void)
 		
 					OSV3_TAB_DATA_HR[6]=(unsigned char)Tab_OSV23Binaire.Data_Capteur.RollingCode;
 					OSV3_CONSTRUIRE_TRAME_THR(Tab_OSV23Binaire.Data_Capteur.Temperature, (int)Tab_OSV23Binaire.Data_Capteur.HR);
-					//FTDI.printf("\r\n\n Transmission de la trame en OSV3 :T=%3.2fÂ°C | HR=%d%%",VAL_TempC,VAL_HR);
+					//FTDI.printf("\r\n\n Transmission de la trame en OSV3 :T=%3.2f°C | HR=%d%%",VAL_TempC,VAL_HR);
 		
 					//Affichage complet
 					//FTDI.printf("\r\n THGR810: %x|%x|%x|%x|%x|%x|%x|%x|%x|%x|%x|%x|%x",OSV3_TAB_DATA_HR[0],OSV3_TAB_DATA_HR[1],OSV3_TAB_DATA_HR[2],OSV3_TAB_DATA_HR[3],OSV3_TAB_DATA_HR[4],OSV3_TAB_DATA_HR[5],OSV3_TAB_DATA_HR[6],OSV3_TAB_DATA_HR[7],OSV3_TAB_DATA_HR[8],OSV3_TAB_DATA_HR[9],OSV3_TAB_DATA_HR[10],OSV3_TAB_DATA_HR[11],OSV3_TAB_DATA_HR[12]);
@@ -519,7 +519,7 @@ int main(void)
 					//OSV23Binaire.type_capteur=THGR2228N;
 					FTDI.printf("\r\n Construction de la Trame de THGR2228N");
 
-					//FTDI.printf("\r\n\n Transmission de la trame en OSV2 :T=%3.2fÂ°C | HR=%d%%",VAL_TempC,VAL_HR);
+					//FTDI.printf("\r\n\n Transmission de la trame en OSV2 :T=%3.2f°C | HR=%d%%",VAL_TempC,VAL_HR);
 
 					SEND_LOW();
 					
@@ -552,7 +552,7 @@ int main(void)
 					FTDI.printf("\r\n Construction de la Trame de UVN800");
 
 					//FTDI.printf("\r\n\n Transmission de la trame en OSV3 :UV=%2.0f",VAL_UV);
-					//Mise en place du canal en OSV3_TAB_DATA_UV[5] : 1 Ã  15
+					//Mise en place du canal en OSV3_TAB_DATA_UV[5] : 1 à 15
 					OSV3_TAB_DATA_UV[5]|=OSV3_CANAL_UV&0x0F;
 					//Mise en place du ROLLING CODE en OSV3_TAB_DATA_UV[6]
 					OSV3_TAB_DATA_UV[6]=(unsigned char)Tab_OSV23Binaire.Data_Capteur.RollingCode;
@@ -576,7 +576,7 @@ int main(void)
 					//OSV23Binaire.type_capteur=BTHR918N;
 					FTDI.printf("\r\n Construction de la Trame de BTHR918N");
 
-					//FTDI.printf("\r\n\n Transmission de la trame en OSV2 :T=%3.2fÂ°C | HR=%d%% | P=%4.0f",VAL_TempC,VAL_HR,Pression);
+					//FTDI.printf("\r\n\n Transmission de la trame en OSV2 :T=%3.2f°C | HR=%d%% | P=%4.0f",VAL_TempC,VAL_HR,Pression);
 
 					SEND_LOW();
 
@@ -610,7 +610,7 @@ int main(void)
 					//OSV23Binaire.type_capteur=THN132N;
 					FTDI.printf("\r\n Construction de la Trame de THN132N");
 
-					//FTDI.printf("\r\n\n Transmission de la trame en OSV2 :T=%3.2fÂ°C",VAL_TempC);
+					//FTDI.printf("\r\n\n Transmission de la trame en OSV2 :T=%3.2f°C",VAL_TempC);
 
 					SEND_LOW();
 
@@ -650,18 +650,18 @@ unsigned char OSV3_CALC_CRC(bool *InitFait)
 	unsigned char CRC=0;
 	
 	//Ne pas inclure tout l'octet d'indice 3 : ne pas tenir compte des 4 bits de syncro -> 0xA
-	//Inclure les octets de l'indice 4 Ã  10. Ne pas inclure le CHECKSUM Ã  l'indice 11
+	//Inclure les octets de l'indice 4 à 10. Ne pas inclure le CHECKSUM à l'indice 11
 	
 	OSV3_INIT_CRC(InitFait);
 	
 	CRC=OSV3_TAB_CRC_INIT[OSV3_TAB_DATA_HR[3] & 0x0F];
-	//ne sert Ã  rien
+	//ne sert à rien
 	//CRC=CRC & 0xFF;
 	
 	for (int i=4 ; i<11 ; i++)
 	{ 
 		CRC=OSV3_TAB_CRC_INIT[CRC ^ OSV3_TAB_DATA_HR[i]];
-		//ne sert Ã  rien
+		//ne sert à rien
 		//CRC=CRC & 0xFF;
 	}
 	//Permutation des NIBBLES
@@ -677,18 +677,18 @@ unsigned char OSV3_CALC_CRC_UV(bool *InitFait)
 	unsigned char CRC=0;
 	
 	//Ne pas inclure tout l'octet d'indice 3 : ne pas tenir compte des 4 bits de syncro -> 0xA
-	//Inclure les octets de l'indice 4 Ã  9. Ne pas inclure le CHECKSUM Ã  l'indice 10
+	//Inclure les octets de l'indice 4 à 9. Ne pas inclure le CHECKSUM à l'indice 10
 	
 	OSV3_INIT_CRC(InitFait);
 	
 	CRC=OSV3_TAB_CRC_INIT[OSV3_TAB_DATA_UV[3] & 0x0F];
-	//ne sert Ã  rien
+	//ne sert à rien
 	//CRC=CRC & 0xFF;
 	
 	for (int i=4 ; i<10 ; i++)
 	{ 
 		CRC=OSV3_TAB_CRC_INIT[CRC ^ OSV3_TAB_DATA_UV[i]];
-		//ne sert Ã  rien
+		//ne sert à rien
 		//CRC=CRC & 0xFF;
 	}
 	//Permutation des NIBBLES
@@ -711,7 +711,7 @@ void OSV3_INIT_CRC(bool *InitFait)
 												CRC=(CRC<<1)^((CRC & 0x80) ? OSV3_CRC8_M433_DI : 0);
 											}
 											
-											//ne sert Ã  rien ici le & bit Ã  bit
+											//ne sert à rien ici le & bit à bit
 											//OSV3_TAB_CRC_INIT[i]=CRC & 0xFF; 
 											OSV3_TAB_CRC_INIT[i]=CRC;
 										}
@@ -729,7 +729,7 @@ unsigned char OSV3_CALC_CHECKSUM_THR(void)
 	
 	CheckSum = ( OSV3_TAB_DATA_HR[3] & 0x0F );
 
-	//Inclure les octets de 4 Ã  10
+	//Inclure les octets de 4 à 10
 	for(int i=4 ; i <= OSV3_TAILLE_DATA_CAPTEUR_THR-3 ; i++)
 	{
 		CheckSum = CheckSum + (OSV3_TAB_DATA_HR[i] & 0x0F) + ((OSV3_TAB_DATA_HR[i]>>4) & 0x0F);
@@ -748,7 +748,7 @@ unsigned char OSV3_CALC_CHECKSUM_UV(void)
 	
 	CheckSum = ( OSV3_TAB_DATA_UV[3] & 0x0F );
 
-	//Inclure les octets de 4 Ã  10
+	//Inclure les octets de 4 à 10
 	for(int i=4 ; i <= OSV3_TAILLE_DATA_CAPTEUR_UV-3 ; i++)
 	{
 		CheckSum = CheckSum + (OSV3_TAB_DATA_UV[i] & 0x0F) + ((OSV3_TAB_DATA_UV[i]>>4) & 0x0F);
@@ -764,17 +764,17 @@ unsigned char OSV3_CALC_CHECKSUM_UV(void)
 //Trame pour capteur T et HR
 void OSV3_CONSTRUIRE_TRAME_THR(float Temp_f, int HumiHR)
 {
-	//Les nibbles sont envoyÃ©s LSB first
+	//Les nibbles sont envoyés LSB first
 	
 	//Preambule du protocole OSV3
-	//24 bits Ã  1 -> 6 nibbles
+	//24 bits à 1 -> 6 nibbles
 	OSV3_TAB_DATA_HR[0]=0xFF;
 	OSV3_TAB_DATA_HR[1]=0xFF;
 	OSV3_TAB_DATA_HR[2]=0xFF;
 	//nibble de synchro -> 0101 -> LSB en 1er soit 0xA0
 	OSV3_TAB_DATA_HR[3]=0xA0;
 	
-	//Trame de donnÃ©es du capteur THGR810 -> payload
+	//Trame de données du capteur THGR810 -> payload
 	//les nibbles 0..3 sont l'ID du capteur qui est unique pour chaque capteur ou commun pour
 	//un groupe de capteur.
 	//Ici ID du capteur est F824 dans l'ordre de reception
@@ -782,28 +782,28 @@ void OSV3_CONSTRUIRE_TRAME_THR(float Temp_f, int HumiHR)
 	OSV3_TAB_DATA_HR[4]=0x82;
 	OSV3_TAB_DATA_HR[5]=0x40;
 	
-	//le nibble 4 pour le CANAL de 1 Ã  15  
+	//le nibble 4 pour le CANAL de 1 à 15  
 	//Insertion du CANAL
 	OSV3_TAB_DATA_HR[5]=OSV3_TAB_DATA_HR[5] | OSV3_CANAL_TEMP_HR;
 
 	//Les nibbles 5..6 pour le code tournant dont la valeur est aleatoire
-	//Ã  chaque reset du capteur : exemple changement de piles.
+	//à chaque reset du capteur : exemple changement de piles.
 	//OSV3_TAB_DATA[6]=OSV3_ROLLING_CODE();
 	OSV3_TAB_DATA_HR[6]=VAL_ROLLING_CODE;
-	//Capteur avec bit d'etat de la batterie -> toujours Ã  0 pour batterie chargÃ©e
-	//valeur Ã  1 lorsque la batterie est Ã  changer
+	//Capteur avec bit d'etat de la batterie -> toujours à 0 pour batterie chargée
+	//valeur à 1 lorsque la batterie est à changer
 	//A changer par une variable pour evolution.
 	OSV3_TAB_DATA_HR[7]=0x80;
 	
-	//Les nibbles 8..[N-5] sont les donnÃ©es du capteur
-	//Les nibbles 10..8 sont la temperature avec 1 LSB qui represente 0.1 Â°C
-	//exemple : un float de 23.5Â°C est Ã  transformer en entier de 235
+	//Les nibbles 8..[N-5] sont les données du capteur
+	//Les nibbles 10..8 sont la temperature avec 1 LSB qui represente 0.1 °C
+	//exemple : un float de 23.5°C est à transformer en entier de 235
 	int temp=(int)(Temp_f*10);
-	//Extraction de 5 de 23.5Â°C
+	//Extraction de 5 de 23.5°C
 	OSV3_TAB_DATA_HR[7]=OSV3_TAB_DATA_HR[7] | ( (abs(temp) % 10) & 0x0F );
-	//Extraction de 3 de 23.5Â°C
+	//Extraction de 3 de 23.5°C
 	OSV3_TAB_DATA_HR[8]=((abs(temp)/10) % 10) << 4;
-	//Extraction de 2 de 23.5Â°C
+	//Extraction de 2 de 23.5°C
 	OSV3_TAB_DATA_HR[8]=OSV3_TAB_DATA_HR[8] | ((abs(temp)/100) & 0x0F);
 	//Le nibble 11 represente le signe de la temperature -> une valeur differente de 0 est 
 	//une temperature negative
@@ -813,7 +813,7 @@ void OSV3_CONSTRUIRE_TRAME_THR(float Temp_f, int HumiHR)
 	OSV3_TAB_DATA_HR[10]=((HumiHR /10) % 10) <<4 ;
 	//Placement du CHECKSUM
 	//Le resultat de la somme sur 8 bits des nibbles 0..[N-5]
-	//Le CHECKSUM est placÃ© dans [N-3]..[N-4]
+	//Le CHECKSUM est placé dans [N-3]..[N-4]
 	OSV3_TAB_DATA_HR[11]=OSV3_CALC_CHECKSUM_THR();
 	//Placement du CRC
 	OSV3_TAB_DATA_HR[12]=OSV3_CALC_CRC(&Fait_Init_TAB_CRC);
@@ -822,10 +822,10 @@ void OSV3_CONSTRUIRE_TRAME_THR(float Temp_f, int HumiHR)
 unsigned char OSV3_ROLLING_CODE(void)
 {
 	
-	//Lecture d'une entrÃ©e analogique sur 16 bits sur la teensy 3.2
-	//Ici l'entrÃ©e analogique est PTC0 soit A1.
+	//Lecture d'une entrée analogique sur 16 bits sur la teensy 3.2
+	//Ici l'entrée analogique est PTC0 soit A1.
 	unsigned short VCAN=AIN.read_u16();
-	//Initialisation du generateur alÃ©atoire
+	//Initialisation du generateur aléatoire
 	srand(VCAN);
 	
 	//Nombre aleatoire entre 1 et 254.
@@ -838,17 +838,17 @@ void OSV3_MANCHESTER_ENCODE(unsigned char Octet_Encode, bool Fin)
 {
 	unsigned char MASK=0x10;
 	//Timer pour la gestion du temps.
-	//Lecture de la durÃ©e
+	//Lecture de la durée
 	static int TimeBase=TimeManchester.read_us();
 	//Bouleen pour tester le dernier bit
 	static bool LastBit=false;
 	
-	//OSV3 emet Ã  la frequence de 1024Hz ou 1024bit/s
+	//OSV3 emet à la frequence de 1024Hz ou 1024bit/s
 	//Prevoir un ajustement en fonction du temp de traitement par le uC
 	//En mesure : 1020Hz et donc 490us
 	const unsigned int DureeDesire=490;
 	//Mode PowerDown -> plus lent et on mesure 764,5Hz au lieu de 1020Hz
-	//Au reveil, la Teensy est Ã  72MHz au lieu de 96MHz -> 96/72=1.33
+	//Au reveil, la Teensy est à 72MHz au lieu de 96MHz -> 96/72=1.33
 	//const unsigned int DureeDesire=367;
 	//Valeur ajustemet du au temps de traitement
 	//Reduction de DureeDesiree
@@ -856,7 +856,7 @@ void OSV3_MANCHESTER_ENCODE(unsigned char Octet_Encode, bool Fin)
 	//Mode PowerDown -> plus lent et on mesure 764,5Hz au lieu de 1020Hz
 	//const unsigned int ReduireDe=24;
 	
-	//Les bits sont transmis de 4 Ã  7 puis de 0 Ã  3
+	//Les bits sont transmis de 4 à 7 puis de 0 à 3
 	for(int i=0 ; i<8 ; i++)
 	{
 		TimeBase=TimeBase+DureeDesire;
@@ -878,15 +878,15 @@ void OSV3_MANCHESTER_ENCODE(unsigned char Octet_Encode, bool Fin)
 		
 		
 		if((Octet_Encode & MASK)==0) {
-																		//Un 0 est reprÃ©sentÃ© par une transition de 0 Ã  1 dans le signal RF
-																		//Mise Ã  0 de la broche
+																		//Un 0 est représenté par une transition de 0 à 1 dans le signal RF
+																		//Mise à 0 de la broche
 																		Data_433=0;
 																		wait_us(DureeDesire-ReduireDe);
 																		Data_433=1;
 			
 																		//Test si dernier bit
-																		//Dans ce cas pas de retard long apres la transition de 0 Ã  1 
-																		//pour indiquer que plus de donnÃ©e Ã  suivre
+																		//Dans ce cas pas de retard long apres la transition de 0 à 1 
+																		//pour indiquer que plus de donnée à suivre
 																		if(Fin) wait_us(DureeDesire);
 																		LastBit=false;
 			
@@ -914,7 +914,7 @@ void OSV3_MANCHESTER_SEND_DATA_THR(void)
 	//Ajouter mise sous tension du module TX en 433MHz
 	//Prevoir une tempo de 60ms
 	
-	//Mise Ã  0 de la broche
+	//Mise à 0 de la broche
 	//Data_433=0;
 	
 	for(int i=0 ; i<OSV3_TAILLE_DATA_CAPTEUR_THR ; i++)
@@ -924,11 +924,11 @@ void OSV3_MANCHESTER_SEND_DATA_THR(void)
 	}
 	
 	//Ajouter mise hors tension du module TX en 433MHz
-	//Mise Ã  0 de la broche
+	//Mise à 0 de la broche
 	//Data_433=0;
 	
 	//Arret du Timer
-	//A tester si necessaire suite Ã  PowerDown de la Teensy 3.2
+	//A tester si necessaire suite à PowerDown de la Teensy 3.2
 	TimeManchester.stop();
 	
 }
@@ -944,7 +944,7 @@ void OSV3_MANCHESTER_SEND_DATA_UV(void)
 	//Ajouter mise sous tension du module TX en 433MHz
 	//Prevoir une tempo de 60ms
 	
-	//Mise Ã  0 de la broche
+	//Mise à 0 de la broche
 	//Data_433=0;
 	
 	for(int i=0 ; i<OSV3_TAILLE_DATA_CAPTEUR_UV ; i++)
@@ -953,11 +953,11 @@ void OSV3_MANCHESTER_SEND_DATA_UV(void)
 	}
 	
 	//Ajouter mise hors tension du module TX en 433MHz
-	//Mise Ã  0 de la broche
+	//Mise à 0 de la broche
 	//Data_433=0;
 	
 	//Arret du Timer
-	//A tester si necessaire suite Ã  PowerDown de la Teensy 3.2
+	//A tester si necessaire suite à PowerDown de la Teensy 3.2
 	TimeManchester.stop();
 	
 }
@@ -1123,13 +1123,13 @@ bool sendATcommand(char *ATcommand, char *expected_answer, float timeout)
 		static char reponse[HC12_TAILLE_BUFFER];
     
 		Timer t;
-		//Initialisation par le '\0' sur la totalitÃ©
+		//Initialisation par le '\0' sur la totalité
     memset(reponse, '\0', HC12_TAILLE_BUFFER);
 		//memset(buffer, '\0', HC12_TAILLE_BUFFER);
     
 		//Attente si ecriture impossible via RS232 pour configurer HC12
 		while(!HC_12.writeable());
-    //Preparation de la commande AT et terminÃ©e par CR non necessaire ici
+    //Preparation de la commande AT et terminée par CR non necessaire ici
 		sprintf(buffer,"%s%s",ATcommand,HC12_END_CMD);
 	
     HC_12.printf("%s",buffer);
@@ -1153,7 +1153,7 @@ bool sendATcommand(char *ATcommand, char *expected_answer, float timeout)
                 answer = true;
 							}
 					}	
-    // Test si la reponse OK est bien presente ou le Timeout est terminÃ© 
+    // Test si la reponse OK est bien presente ou le Timeout est terminé 
     } 
 		while((answer == false) && ((t.read() - debut) < timeout));  
 

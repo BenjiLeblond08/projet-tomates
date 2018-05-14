@@ -5,96 +5,162 @@
  * HC12 Library
  */
 
-/******************************************************************************
- * Dans le main() :
- * 
-
-// Entrée des données dans TransferBinaireOSV3 de type T_DATA_BINAIRE
-//TransferBinaireOSV3.type_capteur = THGR810;
-//TransferBinaireOSV3.HeureAcqui = time(NULL);
-//TransferBinaireOSV3.Temperature = 12.5;
-//TransferBinaireOSV3.HR = 33;
-//TransferBinaireOSV3.numero = 1;
-// Entrée des données dans l'union.
-UnionOSV3.Data_Capteur.HeureAcqui = time(NULL);
-UnionOSV3.Data_Capteur.type_capteur = THN132N;	//valeur 3 dans enum
-UnionOSV3.Data_Capteur.Temperature = 12.5;
-UnionOSV3.Data_Capteur.HR = 33;
-UnionOSV3.Data_Capteur.numero = 1;
-
-
-// Test transmission binaire par HC-12
-for(int i=0;i<37;i++)
-{
-	// Attente Buffer libre
-	while(!HC_12.writeable());
-	// Emission d'un caratere
-	HC_12.putc(UnionOSV3.Tab_TU[i]);
-	// Affichage par le maitre de l'emission
-	FTDI.printf("\r\nEmission de %c",UnionOSV3.Tab_TU[i]);
-}
-
-// Calcul d'un seul ROLLING CODE pour simuler changement de piles
-if(!Fait_ROOLING_CODE) 
-{
-	//VAL_ROLLING_CODE = OSV3_ROLLING_CODE();
-	VAL_ROLLING_CODE = 65;
-	Fait_ROOLING_CODE = true;
-}
-
-******************************************************************************/
-
 
 #ifndef HC12_H
 #define HC12_H
 
 #include "mbed.h"
 
+#define _DEBUG
 
-enum list_OSV3 {THGR810, UVN800, BTHR968, THN132N};
+#ifdef _DEBUG
+extern Serial FTDI;
+#define DEBUG_PRINT(...) FTDI.printf("\r\n"__VA_ARGS__)
+#else
+#define DEBUG_PRINT(...)
+#endif
 
-typedef struct {
-	time_t HeureAcqui; // 4 octets
-	float Temperature; // 4 octets
-	float HR; // 4 octets
-	float UV; // 4 octets
-	float UVA; // 4 octets
-	float UVB; // 4 octets
-	float Pression; // 4 octets
-	int numero; // 4 octets
-	unsigned char RollingCode; // 1 octet
-	enum list_OSV3 type_capteur; // 4 octets
-} T_DB; // sizeof donne 37 octets
+// Gestion des commandes AT
+#define HC12_END_CMD ("\r")
+#define HC12_CR (0x0D)
+#define HC12_RESP_OK ("OK")
+#define HC12_AT	"AT"
+#define HC12_ERROR	"ERROR"
+// Taille maximale de 60 octets en mode FU4 pour envoyer des données
+// Ici buffer pour la configuration : min de 8 (AT+Bxxxx) et en plus CR (HC12_END_CMD) en fin de commande
+// 41 octets au minimum pour recevoir la reponse à AT+RX
+#define HC12_TAILLE_BUFFER 60
+#define HC12_TIMEOUT 1
+// FU4 -> AT+FU4
+#define HC12_FU4 "AT+FU4"
+#define HC12_FU4_Rep "OK+FU4"
+// 100mW -> AT+P8
+#define HC12_100mW "AT+P8"
+#define HC12_100mW_Rep "OK+P8"
+// 433.4MHz -> AT+C001
+#define HC12_CANAL1 "AT+C001"
+#define HC12_CANAL1_Rep "OK+C001"
+// 441.4MHz -> AT+C021
+#define HC12_CANAL21 "AT+C021"
+#define HC12_CANAL21_Rep "OK+C021"
+// 1200bauds -> AT+B1200
+#define HC12_B1200 "AT+B1200"
+#define HC12_B1200_Rep "OK+B1200"
+// Verification Configuration
+#define HC12_Config "AT+RX"
+// Mode SLEEP
+#define HC12_SLEEP "AT+SLEEP"
+#define HC12_SLEEP_Rep "OK+SLEEP"
+// Mode DEFAULT - Reset Factory - 9600bit/s - 8bits - pas parité - 1 bit stop - communication canal 001 (433.4MHz) - Power 20dBm - FU3 
+#define HC12_DEFAULT "AT+DEFAULT"
+#define HC12_DEFAULT_Rep "OK+DEFAULT"
 
-typedef union {
-	T_DB Data_Capteur;
-	char Tab_TU[37]; // meme taille que T_DB et au même emplacement mémoire.
-} TU_DB;
-
-/**
- * Codage fonction IT
- * 
- * Codage des fonctions d'IT pour reception XBee par IT suite TX en binaire
- * Aucun caractere de perdu
+/** 
+ * HC12 class
  */
-void XBee_IT_RX(void);
+class HC12
+{
 
-/**
- * Codage des fonctions d'IT pour LCD NEXTION
- * Aucun caractere de perdu
- */	
-void LCD_NEXTION_IT_RX(void);
+public:
 
-/**
- * Fonction d'IT associée au BT
- */
-void Acq_Car_IT(void);
+	/**
+	 * HC12 Constructor
+	 * 
+	 * @param PinName tx
+	 * @param PinName rx
+	 * @param PinName cs
+	 */
+	HC12(PinName tx, PinName rx, PinName cs);
+	HC12(Serial* hc12, DigitalOut* cs);
+	HC12(Serial* hc12, PinName cs);
 
-/**
- * Copie du tableau data_RX dans le tableau Copie_data_RX
- * Le compilateur ne supporte pas de travailler directement avec un type volatile dans la fonction Extraction_Data
- */	
-void Copie_de_Tableau(volatile char *s, char *d);
+	/**
+	 * HC12 Destructor
+	 */
+	~HC12();
 
+	void initialize(void);
+
+	void clearBuffer(void);
+
+    /** Attach a function to call whenever a serial interrupt is generated
+     *
+     *  @param fptr A pointer to a void function, or 0 to set as none
+     *  @param type Which serial interrupt to attach the member function to (Seriall::RxIrq for receive, TxIrq for transmit buffer empty)
+     */
+    void attach(void (*fptr)(void), Serial::IrqType type = Serial::RxIrq);
+
+	bool writeable(void);
+
+	bool readable(void);
+
+	/**
+	 * 
+	 * 
+	 * @param char* data Byte(s) to write
+	 * 
+	 * @return int Number of writed bytes
+	 */
+	int write(char *data, int size);
+
+	/**
+	 * 
+	 * 
+	 * @param char* data array to put readed bytes
+	 * @param int ndata Number of bytes to read
+	 * 
+	 * @return int Number of readed bytes
+	 */
+	int read(char* data, int ndata = 1);
+
+	void sleep(void);
+	void wakeUp(void);
+
+
+private:
+
+	/**
+	 * sendATcommand
+	 * 
+	 * @param char* ATcommand
+	 * @param char* expected_answer
+	 * @param float timeout
+	 * 
+	 * @return bool true if command sent successfully, false otherwise
+	 */
+	bool sendATcommand(char *ATcommand, char *expected_answer, float timeout);
+
+	/**
+	 * enterCMDMode
+	 * Logical level HIGH during more than 40ms on pin CS_HC12
+	 * 
+	 * @param none
+	 * 
+	 * @return none
+	 */
+	void enterCMDMode(void);
+
+	/**
+	 * leaveCMDMode
+	 * Logical level LOW during more than 80ms on pin CS_HC12
+	 * 
+	 * @param none
+	 * 
+	 * @return none
+	 */
+	void leaveCMDMode(void);
+
+	void enterModeAT(void);
+
+private:
+
+	Serial* m_hc12;
+	DigitalOut* m_cs;
+
+	bool m_cmd_mode;
+
+	char m_CMD_AT[HC12_TAILLE_BUFFER];
+	char m_reponse_AT[HC12_TAILLE_BUFFER];
+};
 
 #endif

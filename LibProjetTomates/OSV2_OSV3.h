@@ -12,6 +12,20 @@
 #include "WakeUp.h"
 #include "clk_freqs.h" // include to check/display clock rates
 
+#define _DEBUG
+
+#ifdef _DEBUG
+extern Serial FTDI;
+#define DEBUG_PRINT(...) FTDI.printf(__VA_ARGS__)
+#else
+#define DEBUG_PRINT(...)
+#endif
+
+/** 
+ * HC12 class
+ */
+class OSV2_OSV3
+{
 
 /**
  * Prototype des fonctions

@@ -56,19 +56,19 @@ DigitalOut LED_ON_Off(PTC5, 0);
 
 
 /******************************************************************************
- * Gestion du 433MHz en Manchester - encodage OSV2
+ * Objet la Gestion du 433MHz en Manchester
  *****************************************************************************/
 Timer TimeManchester;
 // Entrée analogique pour le CAN
 AnalogIn AIN(PTC8);
 
 /******************************************************************************
- * Gestion du 433MHz en Manchester - encodage OSV2
+ * Sortie pour l'emission de la data en 433.92MHz
  *****************************************************************************/
 DigitalOut Data_433(PTC2, 0);
 
 /******************************************************************************
- * Gestion du 433MHz en Manchester - encodage OSV2
+ * Sortie pour la gestion du 433MHz
  *****************************************************************************/
 // NL0 pour test module 433 -> coupure alimentation
 DigitalOut POWER(PTD7, 0);

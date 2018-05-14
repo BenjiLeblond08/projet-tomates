@@ -47,14 +47,14 @@
             <NotGenerated>0</NotGenerated>
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
-          <OutputDirectory>.\BUILD\</OutputDirectory>
+          <OutputDirectory>C:\Teensy_Projet_Tomates_BUILD\</OutputDirectory>
           <OutputName>Teensy_Projet_Tomates</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>1</CreateHexFile>
           <DebugInformation>1</DebugInformation>
           <BrowseInformation>1</BrowseInformation>
-          <ListingPath>.\BUILD\</ListingPath>
+          <ListingPath>C:\Teensy_Projet_Tomates_BUILD\</ListingPath>
           <HexFormatSelection>1</HexFormatSelection>
           <Merge32K>0</Merge32K>
           <CreateBatchFile>0</CreateBatchFile>
@@ -1200,34 +1200,44 @@
           <GroupName>LibProjetTomates</GroupName>
           <Files>
             <File>
-              <FileName>BMP280.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>.\LibProjetTomates\BMP280.cpp</FilePath>
-            </File>
-            <File>
-              <FileName>BMP280.h</FileName>
+              <FileName>HC12.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\LibProjetTomates\BMP280.h</FilePath>
+              <FilePath>.\LibProjetTomates\HC12.h</FilePath>
             </File>
             <File>
-              <FileName>Si7020.cpp</FileName>
+              <FileName>HC12.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>.\LibProjetTomates\Si7020.cpp</FilePath>
+              <FilePath>.\LibProjetTomates\HC12.cpp</FilePath>
             </File>
             <File>
-              <FileName>Si7020.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\LibProjetTomates\Si7020.h</FilePath>
-            </File>
-            <File>
-              <FileName>VEML6075.cpp</FileName>
+              <FileName>OSV2.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>.\LibProjetTomates\VEML6075.cpp</FilePath>
+              <FilePath>.\LibProjetTomates\OSV2.cpp</FilePath>
             </File>
             <File>
-              <FileName>VEML6075.h</FileName>
+              <FileName>OSV2.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\LibProjetTomates\VEML6075.h</FilePath>
+              <FilePath>.\LibProjetTomates\OSV2.h</FilePath>
+            </File>
+            <File>
+              <FileName>OSV3.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\LibProjetTomates\OSV3.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>OSV3.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\LibProjetTomates\OSV3.h</FilePath>
+            </File>
+            <File>
+              <FileName>tomates.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\LibProjetTomates\tomates.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>tomates.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\LibProjetTomates\tomates.h</FilePath>
             </File>
           </Files>
         </Group>

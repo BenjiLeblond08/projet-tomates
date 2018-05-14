@@ -2,56 +2,279 @@
  * Projet Tomates
  * Teensy 3.2
  * 
- * Test transfert en binaire par HC-12
- * Par un struct dans un union
- * 
+ * HC12 Library
  */
-
 
 #include "mbed.h"
 #include "HC12.h"
 
 
-void XBee_IT_RX(void)
+HC12::HC12(PinName tx, PinName rx, PinName cs)
 {
-	do {
-		data_RX_XBee[CPT_RX_XBee++] = XBee_SX.getc();
-	} while(XBee_SX.readable() || CPT_RX_XBee != sizeof(TU_DB));
+	m_hc12 = new Serial(tx, rx); // Liaison serie via TX0(PTB17) RX0(PTB16)
+	m_cs = new DigitalOut(cs, 1);
+	m_cmd_mode = false;
 
-	IT_RX_XBee_OK=true;
+	m_hc12->baud(9600);
+	m_hc12->format(8, SerialBase::None, 1);
 }
 
-void LCD_NEXTION_IT_RX(void)
+HC12::HC12(Serial* hc12, DigitalOut* cs)
 {
-	do {
-		data_RX_LCD_Nextion[CPT_RX_LCD_Nextion++] = LCD_HMI.getc();
-	} while(LCD_HMI.readable());
+	m_hc12 = hc12; // Liaison serie via TX0(PTB17) RX0(PTB16)
+	m_cs = cs;
+	m_cmd_mode = false;
+
+	m_hc12->baud(9600);
+	m_hc12->format(8, SerialBase::None, 1);
+}
+
+HC12::HC12(Serial* hc12, PinName cs)
+{
+	m_hc12 = hc12; // Liaison serie via TX0(PTB17) RX0(PTB16)
+	m_cs = new DigitalOut(cs, 1);
+	m_cmd_mode = false;
+
+	m_hc12->baud(9600);
+	m_hc12->format(8, SerialBase::None, 1);
+}
+
+HC12::~HC12() { }
+
+
+void HC12::initialize(void)
+{
+	DEBUG_PRINT("HC12 init...");
+	enterCMDMode();
+
+	enterModeAT();
+
+	// Config mode FU4 -> "AT+FU4"
+	sprintf(m_CMD_AT, HC12_FU4);
+	sprintf(m_reponse_AT, HC12_FU4_Rep);
+	if(sendATcommand(m_CMD_AT, m_reponse_AT , HC12_TIMEOUT))
+		DEBUG_PRINT("sendATcommand=AT+FU4");
+	else
+		DEBUG_PRINT("sendATcommand=ERROR");
+
+	//Config mode 100mW -> "AT+P8"
+	sprintf(m_CMD_AT, HC12_100mW);
+	sprintf(m_reponse_AT, HC12_100mW_Rep);
+	if(sendATcommand(m_CMD_AT, m_reponse_AT , HC12_TIMEOUT))
+		DEBUG_PRINT("sendATcommand=AT+P8");
+	else
+		DEBUG_PRINT("sendATcommand=ERROR");
+
+	/**
+	 * Canal 1 - 433.1MHz
+	 * Config mode 433.1MHz -> "AT+C001"
+	 */
+	//sprintf(m_CMD_AT, HC12_CANAL1);
+	//sprintf(m_reponse_AT, HC12_CANAL1_Rep);
+	//if(sendATcommand(m_CMD_AT, m_reponse_AT , HC12_TIMEOUT)) DEBUG_PRINT("sendATcommand=AT+C001");
+	//else DEBUG_PRINT("sendATcommand=ERROR");
+
+	/**
+	 * Canal 21 - 441.4MHz
+	 * Config mode 441.4MHz -> "AT+C021"
+	 */
+	sprintf(m_CMD_AT, HC12_CANAL21);
+	sprintf(m_reponse_AT, HC12_CANAL21_Rep);
+	if(sendATcommand(m_CMD_AT, m_reponse_AT , HC12_TIMEOUT))
+		DEBUG_PRINT("sendATcommand=AT+C021");
+	else
+		DEBUG_PRINT("sendATcommand=ERROR");
+
+	// Config mode 1200bauds -> "AT+B1200"
+	sprintf(m_CMD_AT, HC12_B1200);
+	sprintf(m_reponse_AT, HC12_B1200_Rep);
+	if(sendATcommand(m_CMD_AT, m_reponse_AT , HC12_TIMEOUT))
+		DEBUG_PRINT("sendATcommand=AT+B1200");
+	else
+		DEBUG_PRINT("sendATcommand=ERROR");
+
+	leaveCMDMode();
+
+}
+
+void HC12::clearBuffer(void)
+{
+	while(m_hc12->readable()) {
+	    m_hc12->getc();
+	}
+}
+
+void HC12::attach(void (*fptr)(void), Serial::IrqType type)
+{
+	m_hc12->attach(*fptr, type);
+}
+
+bool HC12::writeable(void)
+{
+	return m_hc12->writeable();
+}
+
+bool HC12::readable(void)
+{
+	return m_hc12->readable();
+}
+
+int HC12::write(char *data, int size)
+{
+
+	int i;
+
+	for(i = 0; i < size; i++)
+	{
+		// Attente Buffer libre
+		while(!m_hc12->writeable());
+		// Emission d'un caratere
+		m_hc12->putc(data[i]);
+		// HC_12.putc(UnionOSV3.Tab_TU[i]);
+		// Affichage par le maitre de l'emission
+		// DEBUG_PRINT("Emission de (char) %c", data[i]);
+		// DEBUG_PRINT("Emission de (hex) : 0x%#x", data[i]);
+	}
+	return i;
+}
+
+int HC12::read(char* data, int ndata)
+{
+	int i = 0;
+
+	// for (int j = 0; j < ndata - 1; ++j)
+	// {
+	// 	data[j] = m_hc12->getc();
+	// }
+
+	m_hc12->getc();
+	do
+	{
+		data[i++] = m_hc12->getc();
+	} while (i < ndata);
+	// } while (m_hc12->readable() || i != ndata);
+
+	// while(m_hc12->readable())
+	// {
+	// 	data[i++] = m_hc12->getc();
+	// 	// DEBUG_PRINT("Lecture de (hex) : 0x%x", data[i]);
+	// 	// i++;
+	// }
+
+	return i;
+}
+
+void HC12::sleep(void)
+{
+	enterCMDMode();
+
+	enterModeAT();
+
+	// Enter mode SLEEP -> "AT+SLEEP"
+	sprintf(m_CMD_AT, HC12_SLEEP);
+	sprintf(m_reponse_AT, HC12_SLEEP_Rep);
+	if(sendATcommand(m_CMD_AT, m_reponse_AT , HC12_TIMEOUT)) DEBUG_PRINT("sendATcommand=AT+SLEEP");
+	else DEBUG_PRINT("sendATcommand=ERROR");
+
+	leaveCMDMode();
+}
+
+void HC12::wakeUp(void)
+{
+	enterCMDMode();
+	// wait_us(5);
+	leaveCMDMode();
+}
+
+
+bool HC12::sendATcommand(char* ATcommand, char* expected_answer, float timeout)
+{
+	int i = 0;
+	float debut;  
+	bool answer = false;
 	
-	data_RX_LCD_Nextion[CPT_RX_LCD_Nextion] = '\0';
+	static char buffer[HC12_TAILLE_BUFFER];
+	static char reponse[HC12_TAILLE_BUFFER];
 
-	IT_RX_LCD_Nextion_OK = true;
+	Timer t;
+	// Initialisation par le '\0' sur la totalité
+	memset(reponse, '\0', HC12_TAILLE_BUFFER);
+	//memset(buffer, '\0', HC12_TAILLE_BUFFER);
 
+	// Attente si ecriture impossible via RS232 pour configurer HC12
+	while(!m_hc12->writeable());
+	// Preparation de la commande AT et terminée par CR non necessaire ici
+	sprintf(buffer, "%s%s", ATcommand, HC12_END_CMD);
+	
+	m_hc12->printf("%s", buffer);
+
+	// Preparation du Timeout si la reponse du HC12 ne vient pas...
+	t.reset();
+	t.start();
+	
+	debut = t.read();
+
+	// Gestion de la reponse du HC12
+	do
+	{
+		// if there are data in the UART input buffer, reads it and checks for the asnwer
+		if(m_hc12->readable())
+		{
+			reponse[i++] = (char)m_hc12->getc();
+			// test si la reponse est bien OK
+			if (strstr(reponse, expected_answer) != NULL)
+				answer = true;
+		}
+	} // Test si la reponse OK est bien presente ou le Timeout est terminé
+	while((answer == false) && ((t.read() - debut) < timeout));
+
+	// Arret du Timer
+	t.stop();
+
+	// DEBUG
+	//DEBUG_PRINT("\r\nTX = %s | RX = %s",buffer,reponse);
+	//DEBUG_PRINT("\r\nTimeout = %fs",t.read() - debut);
+
+	// true ou false -> true si OK bien present et false dans l'autre cas
+	return (answer);
 }
 
-void Acq_Car_IT(void)
+
+void HC12::enterCMDMode(void)
 {
-	// Mise à 1 de P19
-	Mes_Duree_P19 = 1;
-
-	do {
-		Car_Recu = Xbee_BT.getc();
-		data_RX_BT[CPT_I++] = Car_Recu;
-	} while(Xbee_BT.readable() || Car_Recu != '?');
-
-	data_RX_BT[CPT_I] = '\0';
-
-	CPT_I = 0;
-
-	Acq_Terminee = TRUE;
-	// Le '!' et le '?' sont inclus dans data_RX
+	// NL0 pendant >40ms
+	m_cs->write(0);
+	m_cmd_mode = true;
+	wait_ms(41);
 }
 
-void Copie_de_Tableau(volatile char *s, char *d)
+void HC12::leaveCMDMode(void)
 {
-	while((*d++=*s++)!='\0');
+	// NL1 et attente MAJ pendant >80ms avant retout mode transparent
+	m_cs->write(1);
+	m_cmd_mode = false;
+	wait_ms(81);
+}
+
+void HC12::enterModeAT(void)
+{
+	if(!m_cmd_mode)
+		return;
+
+	// Enter mode AT -> "AT"
+	sprintf(m_CMD_AT, HC12_AT);
+	sprintf(m_reponse_AT, HC12_RESP_OK);
+	if(sendATcommand(m_CMD_AT, m_reponse_AT , HC12_TIMEOUT))
+		DEBUG_PRINT("sendATcommand=OK");
+	else
+	{
+		DEBUG_PRINT("sendATcommand=ERROR");
+		DEBUG_PRINT("Changement vitesse en 1200bauds");
+		// Changement vitesse transmission RS232 suite nouvelle configuration.
+		// Configuration liaison serie
+		// reglage usine : 1200 bauds
+		m_hc12->baud(1200);
+		// Tempo pour mise en service de la nouvelle vitesse de la RS232.
+		wait_ms(200);
+	}
 }
