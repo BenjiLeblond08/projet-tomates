@@ -1,0 +1,123 @@
+uvconf = 0x18
+ uvconf = 0x18
+uvaraw = 0x30
+uvcomp1 = 0xf
+uvcomp2 = 0x2
+uvbraw = 0x43
+uvcomp1 = 0x10
+uvcomp2 = 0x2
+UVA = 12.040000
+UVB = 16.320000
+UVIA = 0.017590
+UVIB = 0.042285
+UVI = 0.029938
+ UVI = 0.0299
+
+uvconf = 0x18
+ uvconf = 0x18
+uvaraw = 0x30
+uvcomp1 = 0xf
+uvcomp2 = 0x1
+uvbraw = 0x41
+uvcomp1 = 0xf
+uvcomp2 = 0x1
+UVA = 13.370000
+UVB = 19.010000
+UVIA = 0.019534
+UVIB = 0.049255
+UVI = 0.034394
+ UVI = 0.0344
+
+
+
+VEML6075 detecte.
+VEML6075 Config=0x10.
+UVA=-39.750
+UVB=-0.250
+Indice UV=-0.022
+
+
+
+---------------------------------------------
+
+
+Initialisation BMP280
+
+CTRL_MEAS=0xb5|CONFIG=0xb0
+Fin Initialisation BMP280
+
+dig_T = 0x6ac8, 0x65a2, 0xfffffc18
+
+Temp: 29.9000 ‹C, Pression: 1003.93 hPa
+Altitude= 77.8834m
+
+
+
+
+
+
+
+dig_T = 0x6ac8, 0x65a2, 0xfffffc18
+
+dig_P = 0x9513, 0xffffd577, 0xbd0, 0x226, 0xc4, 0xfffffff9, 0x3c8c, 0xffffc6f8, 0x1770
+
+
+ ###############################
+ # Hello World                 #
+ # I'm Teensy 3.2              #
+ # Program by Benjamin LEBLOND #
+ ###############################
+0 ACK
+0x40 ACK
+0x77 ACK
+
+
+temp_raw 526560
+Temperature: 78.769997
+Pressure: 1083.089966
+
+temp_raw 526560
+t_fine 403306
+Temperature: 78.769997
+Pressure: 1083.030029
+
+temp_raw 542576
+t_fine 428557
+Temperature: 83.699997
+Pressure: 1098.839966
+
+
+temp_raw 529072
+dig_T = 0x6ac8, 0x65a2, 0xfffffc18
+
+t_fine 407268
+Temperature: 79.540001
+Pressure: 1082.920044
+
+
+
+
+adc_T 536170, adc_p 431716
+
+t_fine 156314
+BMP280 T 3053
+
+Temp: 30.5300 ‹C, Pression: 1003.55 hPa
+
+
+
+
+
+
+
+Initialisation BMP280
+
+CTRL_MEAS=0xb5|CONFIG=0xb0
+Fin Initialisation BMP280
+
+dig_T = 0x6ac8, 0x65a2, 0xfffffc18
+
+adc_T 526793, adc_p 428986
+
+Temp: 27.6400 ‹C, Pression: 1003.66 hPa
+Altitude= 80.1727m

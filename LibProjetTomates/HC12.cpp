@@ -3,6 +3,11 @@
  * Teensy 3.2
  * 
  * HC12 Library
+ * 
+ * @author Benjamin LEBLOND <benjamin.leblond@orange.fr>
+ * @version 1.0
+ * @date    21-May-2018
+ * 
  */
 
 #include "mbed.h"
@@ -10,31 +15,31 @@
 
 
 HC12::HC12(PinName tx, PinName rx, PinName cs)
+	:
+	m_hc12(new Serial(tx, rx)), // Liaison serie via TX0(PTB17) RX0(PTB16)
+	m_cs(new DigitalOut(cs, 1)),
+	m_cmd_mode(false)
 {
-	m_hc12 = new Serial(tx, rx); // Liaison serie via TX0(PTB17) RX0(PTB16)
-	m_cs = new DigitalOut(cs, 1);
-	m_cmd_mode = false;
-
 	m_hc12->baud(9600);
 	m_hc12->format(8, SerialBase::None, 1);
 }
 
 HC12::HC12(Serial* hc12, DigitalOut* cs)
+	:
+	m_hc12(hc12),
+	m_cs(cs),
+	m_cmd_mode(false)
 {
-	m_hc12 = hc12; // Liaison serie via TX0(PTB17) RX0(PTB16)
-	m_cs = cs;
-	m_cmd_mode = false;
-
 	m_hc12->baud(9600);
 	m_hc12->format(8, SerialBase::None, 1);
 }
 
 HC12::HC12(Serial* hc12, PinName cs)
-{
-	m_hc12 = hc12; // Liaison serie via TX0(PTB17) RX0(PTB16)
-	m_cs = new DigitalOut(cs, 1);
-	m_cmd_mode = false;
-
+	:
+	m_hc12(hc12),
+	m_cs(new DigitalOut(cs, 1)),
+	m_cmd_mode(false)
+{	
 	m_hc12->baud(9600);
 	m_hc12->format(8, SerialBase::None, 1);
 }
@@ -57,7 +62,7 @@ void HC12::initialize(void)
 	else
 		DEBUG_PRINT("sendATcommand=ERROR");
 
-	//Config mode 100mW -> "AT+P8"
+	// Config mode 100mW -> "AT+P8"
 	sprintf(m_CMD_AT, HC12_100mW);
 	sprintf(m_reponse_AT, HC12_100mW_Rep);
 	if(sendATcommand(m_CMD_AT, m_reponse_AT , HC12_TIMEOUT))
@@ -121,20 +126,17 @@ bool HC12::readable(void)
 
 int HC12::write(char *data, int size)
 {
-
 	int i;
+
+	// m_hc12->putc(0xaa);
+	// m_hc12->putc(0xaa);
 
 	for(i = 0; i < size; i++)
 	{
-		// Attente Buffer libre
 		while(!m_hc12->writeable());
-		// Emission d'un caratere
 		m_hc12->putc(data[i]);
-		// HC_12.putc(UnionOSV3.Tab_TU[i]);
-		// Affichage par le maitre de l'emission
-		// DEBUG_PRINT("Emission de (char) %c", data[i]);
-		// DEBUG_PRINT("Emission de (hex) : 0x%#x", data[i]);
 	}
+	wait_ms(size*20); // Wait for end of transmission
 	return i;
 }
 
@@ -142,24 +144,12 @@ int HC12::read(char* data, int ndata)
 {
 	int i = 0;
 
-	// for (int j = 0; j < ndata - 1; ++j)
-	// {
-	// 	data[j] = m_hc12->getc();
-	// }
+	// m_hc12->getc();
 
-	m_hc12->getc();
 	do
 	{
 		data[i++] = m_hc12->getc();
-	} while (i < ndata);
-	// } while (m_hc12->readable() || i != ndata);
-
-	// while(m_hc12->readable())
-	// {
-	// 	data[i++] = m_hc12->getc();
-	// 	// DEBUG_PRINT("Lecture de (hex) : 0x%x", data[i]);
-	// 	// i++;
-	// }
+	} while (m_hc12->readable() || i < ndata);
 
 	return i;
 }

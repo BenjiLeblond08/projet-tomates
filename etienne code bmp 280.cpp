@@ -89,6 +89,15 @@
 //Tutoriel de début
 //https://www.boecker-systemelektronik.de/epages/63381271.sf/de_DE/?ObjectPath=/Shops/63381271/Categories/Tutorials/%22Grafische+Oberfl%C3%A4chen+f%C3%BCr+Mikrocontroller-Anwendungen%22
 
+//Tutoriel Russe sur LSM6DS33
+//https://www.youtube.com/watch?v=UzXH_3b_Cis
+//Cours
+//http://narodstream.ru/stm-urok-47-podklyuchaem-giroskop-lsm6ds3-chast-2/
+
+//A lire LSM6DS33
+//https://electronics.stackexchange.com/questions/358713/interrupt-and-fifo-settings-in-lsm6ds3
+//https://community.st.com/thread/47814-interrupt-and-fifo-settings-in-lsm6ds3
+
 #include "mbed.h"
 //#include "USBSerial.h"
 #include "SDFileSystem.h"
@@ -431,7 +440,7 @@ Serial XBee_SX(PTB17,PTB16);
 /////////////////////////////////////////////////////////////////////////////
 DigitalOut CS_HC12(PTB19,1);
 //HC12-433
-Serial HC_12(PTE0,PTE1);
+Serial HC_12(PTB17,PTB16);
 
 //Commande de la LED1 en sortie
 //DigitalOut LED1_ON_Off(PTC5,LED1_OFF);
@@ -480,6 +489,10 @@ typedef struct {
 /////////////////////////////////////////////////////////////////////////////
 // Declaration objet pour SPI Optima
 /////////////////////////////////////////////////////////////////////////////
+							 
+//Test pour LSM6DS33							 
+
+/*							 
 //Liste des signaux :
 //CSLCD_3_3 sur PTC0 -> sortie
 DigitalOut CSLCD(PTC0,1); 
@@ -496,7 +509,9 @@ SPI Optima(PTC6, PTC7, PTD1);
 //A0AFF_3_3 sur PTA5 -> sortie
 DigitalOut A0AFF(PTA5,1); 					 
 //TON/OFF_3_3 sur PTC3 -> entrée
-DigitalIn TON_OFF(PTC3, PullNone); 
+DigitalIn TON_OFF(PTC3, PullNone);
+*/
+
 /////////////////////////////////////////////////////////////////////////////
 // Declaration objet pour 1 wire
 /////////////////////////////////////////////////////////////////////////////
@@ -764,11 +779,410 @@ volatile bool IT_RX_LCD_Nextion_OK=false;
 //Variable dans la fonction IT -> ne fonctionne pas.
 volatile unsigned int CPT_RX_LCD_Nextion=0;
 
+/////////////////////////////////////////////////////////////////////////////
+// Fonction pour gestion du LSM6DS33TR
+/////////////////////////////////////////////////////////////////////////////
+unsigned char LSM_spi_read(unsigned char target);
+short LSM_spi_read_16bits(unsigned char target);
+void LSM_spi_write(unsigned char target, unsigned char data2write);
+void LSM_spi_init(void);
+float CalcAcc(int acc);
+float CalcGyro(int gyro);
+void LSM_ISR_INT1(void);
+void LSM_ISR_INT2(void);
+void LSM_Vidage_FIFO(void);
+unsigned short LSM_FIFO_Status(void);
+short LSM_Read_FIFO(void);
+unsigned short LSM_FIFO_Pattern(void);
+void LSM_bypass_FIFO(void);
+
+
+/////////////////////////////////////////////////////////////////////////////
+// SPI pour LSM6DS33TR
+/////////////////////////////////////////////////////////////////////////////
+
+//SPI pour le LSM6DS33TR
+//       mosi miso sclk
+SPI LSM(PTC6, PTC7, PTD1);
+
+//CS pour LSM6DS33TR
+DigitalOut LSM_CS(PTC5,1);
+
+//INT2 et INT1 en entrée interruption
+//Le flag FIFO_STATUS2 est redirigé vers INT1 par INT1_CTRL
+//INT1 sur PTD0
+InterruptIn LSM_INT1(PTD0);
+//INT2 sur PTB19
+InterruptIn LSM_INT2(PTB19);
+
+/////////////////////////////////////////////////////////////////////////////
+// #define pour LSM6DS33TR
+/////////////////////////////////////////////////////////////////////////////
+#define LSM_READ		0x80
+#define LSM_WRITE 	0x7F
+
+#define LSM_accelX	0x28
+#define LSM_accelY	0x2A
+#define LSM_accelZ	0x2C
+
+#define LSM_gyroX		0x22
+#define LSM_gyroY		0x24
+#define LSM_gyroZ		0x26
+
+#define LSM_FIFO_Data_L 0x3E
+#define LSM_FIFO_Data_H 0x3F
+
+#define LSM_FIFO_STATUS1	0x3A
+#define LSM_FIFO_STATUS2	0x3B
+
+#define LSM_FIFO_STATUS3	0x3C
+#define LSM_FIFO_STATUS4	0x3D
+
+//AN page 9
+#define WHO_I_AM		0b01101001
+//Taille FIFO -> 8ko soit 4096 mots de 16bits - page 41 de la doc.
+//#define TAILLE_FIFO	4095
+#define TAILLE_FIFO	4040
+//#define TAILLE_FIFO	210
+//#define TAILLE_FIFO	3990
+//#define TAILLE_FIFO	1000
+//Taille max de la FIFO pour tableaux
+#define TAILLE_FIFO_MAX 4095
+
+/////////////////////////////////////////////////////////////////////////////
+// Variable globale pour LSM6DS33TR
+/////////////////////////////////////////////////////////////////////////////
+volatile bool Flag_Fifo=true;
+volatile bool Flag_Wake=true;
+
+/////////////////////////////////////////////////////////////////////////////
+// I2C pour HDC1080
+/////////////////////////////////////////////////////////////////////////////
+//Adress HDC1080 sur 8bits (Cf. page 10 de la doc).
+#define I2C_HDC1080		0b1000000 <<1
+
+#define Temp_14bits		6.35
+#define Temp_11bits		3.35
+
+#define RH_14bits			6.50
+#define RH_11bits			3.85
+#define RH_8bits			2.50
+
+#define Reg_Temp			0x00
+#define Reg_HR				0x01
+#define Reg_Config		0x02
+
+#define Reg_ID_HBytes			0xFB
+#define Reg_ID_MBytes			0xFC
+#define Reg_ID_LBytes			0xFD
+
+#define Reg_ID_Manu				0xFE
+#define Reg_ID_Device			0xFF
+
+#define VAL_ID_Manu			0x5449
+#define VAL_ID_Device		0x1050
+
+#define Precision_Temp_demandee 14
+//#define Precision_Temp_demandee 11
+
+
+#define Precision_HR_demandee 14
+//#define Precision_HR_demande 11
+//#define Precision_HR_demandee 8
+
+/////////////////////////////////////////////////////////////////////////////
+// Variable globale pour I2C - Gestion du timeout
+/////////////////////////////////////////////////////////////////////////////
+bool TimeOut_Ended;
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Fonction pour gestion du HDC1080
+/////////////////////////////////////////////////////////////////////////////
+unsigned short HDC1080_Read_Temp(int addr, unsigned char Precision, bool *TimeOut_Ended);
+unsigned short HDC1080_Read_HR(int addr, unsigned char Precision, bool *TimeOut_Ended);
+bool HDC1080_Read_Temp_HR(int addr, unsigned char PrecisionTemp, unsigned char PrecisionHR, unsigned short *Temp, unsigned short *HR, bool *TimeOut_Ended);
+bool HDC1080_Test_ID(int addr, bool *TimeOut_Ended);
+float Calc_Temp(unsigned short Temp);
+float Calc_HR(unsigned short HR);
+
+//Declaration des objets pour le HDC1080
+//           SDA SCL
+I2C HDC1080(PTC11,PTC10);
+//Vitesse de l'IC 400kHz max (Cf. page 6 de la doc et vitesse minimale 10kHz).
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Fonction pour gestion du BMP280
+/////////////////////////////////////////////////////////////////////////////
+
+//typedef pour les parametres du BMP280
+typedef struct
+	{
+		unsigned short    dig_T1;
+    short     				dig_T2, dig_T3;
+    unsigned short    dig_P1;
+    short     				dig_P2, dig_P3, dig_P4, dig_P5, dig_P6, dig_P7, dig_P8, dig_P9;
+	} T_BMP280;
+
+
+
+//Autre solution de codage - BMP280
+int BMP280_init(int addr, T_BMP280 *BMP280_Data , char ctrl_meas , char config , bool *TimeOut_Ended);
+int BMP280_readData(int addr, T_BMP280 BMP280_Data , float *tempC, float *pressPa, bool *TimeOut_Ended);
+void BMP_280_write(int addr, char reg, char ctrl, bool *TimeOut_Ended);
+void BMP280_read(int addr, char reg, char *data, int length, bool *TimeOut_Ended);
+bool BMP280_Test_Presence(int addr, bool *TimeOut_Ended);
+bool BMP280_Fin_Mesure(int addr, bool *TimeOut_Ended);
+float BMP280_readAltitude(float seaLevelhPa, float PressPa);
+bool BMP280_Soft_Reset(int addr, bool *TimeOut_Ended);
+	
+//Variable globale pour le BMP280
+T_BMP280 BMP280_Data;
+	
+//https://developer-sjc-indigo-border.mbed.org/teams/MtM/code/BMP280/docs/tip/BMP280_8h_source.html
+//https://learn.adafruit.com/pages/6077/elements/2957962/download
+//CODE BOSCH
+//https://github.com/BoschSensortec/BMP280_driver/blob/master/bmp280_defs.h
+	
+//Adresse I2C du BMP280
+#define ADRESSE_SELECTION_BMP280 0x76<<1 
+	
+// Register define 
+#define BMP280_REG_CALIBRATION  0x88    // calibration register start
+#define BMP280_REG_ID           0xD0    // read out is 0x58
+#define BMP280_CHIPID           0x58
+#define BMP280_REG_RESET        0xE0    // write value 0xB6 will process power-on-reset other value is not work
+#define BMP280_REG_STATUS       0xF3    // indicate status of the device
+#define BMP280_REG_CTRL_MEAS    0xF4    // config options of the device
+#define BMP280_REG_CONFIG       0xF5    // set rate, filted and interface options of device
+#define BMP280_REG_PRESS        0xF7    // pressure measurement out data 0xF7~0xF9
+#define BMP280_REG_TMEP         0xFA    // temperature measurment out data 0xFA~0xFC
+ 
+
+
+//Valeur pour filter
+#define BMP280_FILTER_OFF       0b000    	// filter off
+#define BMP280_FILTER_2       	0b001    	// filter 2
+#define BMP280_FILTER_5       	0b010   	// filter 5
+#define BMP280_FILTER_11       	0b011   	// filter 11
+#define BMP280_FILTER_22        0b100    	// filter 22
+
+
+#define BMP280_OSSR_SKIP        0x00    // Skipped output set to 0x80000
+#define BMP280_OSSR_OV1         0x01    // oversampling x1
+#define BMP280_OSSR_OV2         0x02    // oversampling x2
+#define BMP280_OSSR_OV4         0x03    // oversampling x4
+#define BMP280_OSSR_OV8         0x04    // oversampling x8
+#define BMP280_OSSR_OV16        0x05    // oversampling x16
+ 
+// wait to read out time
+// T_SB
+#define BMP280_T_SB0            0x00    // 0.5ms
+#define BMP280_T_SB62           0x01    // 62.5ms
+#define BMP280_T_SB125          0x02    // 125ms
+#define BMP280_T_SB250          0x03    // 250ms
+#define BMP280_T_SB500          0x04    // 500ms
+#define BMP280_T_SB1000         0x05    // 1000ms
+#define BMP280_T_SB2000         0x06    // 2000ms
+#define BMP280_T_SB4000         0x07    // 4000ms
+ 
+// Power Mode
+#define BMP280_POWER_SLEEP      0b00
+#define BMP280_POWER_FORCE      0b01
+#define BMP280_POWER_NORMAL     0b11
+
+// OSSR Data soit pour osrs_p (3 bits) et osrs_t (3 bits)
+//osrs_t :
+//000 -> pas de mesure de T
+//001 -> 16bits / 0.0050°C
+//010 -> 17bits / 0.0025°C
+//011 -> 18bits / 0.0012°C
+//100 -> 19bits / 0.0005°C
+//101 -> 20bits / 0.0003°C
+#define OSRS_Pas_Mesure_T	0b000
+#define OSRS_T_16bits			0b001
+#define OSRS_T_17bits			0b010
+#define OSRS_T_18bits			0b011
+#define OSRS_T_19bits			0b100
+#define OSRS_T_20bits			0b101
+
+//osrs_p :
+//000 -> pas de mesure de P
+//001 -> 16bits / 2.62 Pa
+//010 -> 17bits / 1.31 Pa
+//011 -> 18bits / 0.66 Pa
+//100 -> 19bits / 0.33 Pa
+//101 -> 20bits / 0.16 Pa
+#define OSRS_Pas_Mesure_P	0b000
+#define OSRS_P_16bits			0b001
+#define OSRS_P_17bits			0b010
+#define OSRS_P_18bits			0b011
+#define OSRS_P_19bits			0b100
+#define OSRS_P_20bits			0b101
+
+//Detail du registre ctrl_meas
+// bit  7 6 5   4 3 2    1 0   
+//      osrs_t  osrs_p   mode
+
+//Detail du registre config
+// bit  7 6 5   4 3 2    1 0   
+//      t_sb    filter   X spi3w_en
+
+//Configuration du BMP280
+//mode FORCE
+//Mesure de T et P avec maximum de precision : ULTRA HIGH RESOLUTION (table 13)
+//T avec : oversamling x16 -> 20bits / 0.0003°C
+//P avec : oversamling x16 -> 20bits / 0.16 hPa
+
+#define CTRL_MEAS		(OSRS_T_20bits <<5) | (OSRS_P_20bits << 2) | (BMP280_POWER_FORCE)
+#define CONFIG			(BMP280_OSSR_OV16 <<5) | (BMP280_FILTER_22 <<2) | (0b00)
+
+#define SEALEVELHPA 1013.25
+
+//Ce qui donne :
+//#define CTRL_MEAS		0b101 101 01 soit 0xb5
+//#define CONFIG			0b101 100 00 soit 0xb0
 
 //---------------------------------------------------------------------------
 
 int main(void) 
 {
+	
+	//Vitesse FTDI
+	//FTDI.baud(250000);
+	FTDI.baud(921600);
+	//FTDI.baud(512000);
+	FTDI.format(8,SerialBase::None,1);
+	
+	//Initialisation de l'I2C - vitesse 400kHz
+	Capt_I2C1.frequency(400000);
+	
+	//Affichage
+	FTDI.printf("\r\n Test BMP280 - Presser une touche pour continuer.");
+	int c=FTDI.getc();
+	
+	//declaration des variables
+	float BMP280_Temp;
+  float BMP280_Pressure;
+	
+
+	
+	//Recherche des adresses des composants en I2C1 par un scan I2C
+		FTDI.printf("\r\n\rDebut Scanner I2C1\r\n");
+		
+		for (int i=0 ; i<128 ; i++)
+		{
+			if(!Capt_I2C1.write(i<<1, NULL, 0)) FTDI.printf("%#x ACK \r\n",i);
+		}
+		
+		FTDI.printf("Fin Scanner I2C1\r\n");
+		
+		FTDI.printf("Debut Soft Reset\r\n");
+		BMP280_Soft_Reset(ADRESSE_SELECTION_BMP280, &TimeOut_Ended);
+		FTDI.printf("Fin Soft Reset\r\n");
+		
+		//Test presense BMP280
+		if(!BMP280_Test_Presence(ADRESSE_SELECTION_BMP280, &TimeOut_Ended)) FTDI.printf("Erreur BMP280 non detecte.");
+		else 
+			{	
+				FTDI.printf("BMP280 detecte.");
+	
+				while(true)
+				{
+					
+					//2eme solution
+					FTDI.printf("\r\n\rInitialisation BMP280\r\n");
+					FTDI.printf("\r\nCTRL_MEAS=%#x|CONFIG=%#x",CTRL_MEAS, CONFIG);
+					BMP280_init(ADRESSE_SELECTION_BMP280, &BMP280_Data, CTRL_MEAS, CONFIG, &TimeOut_Ended);
+					FTDI.printf("\r\n\rFin Initialisation BMP280\r\n");
+					
+					
+					//Attente fin mesure
+					while(!BMP280_Fin_Mesure(ADRESSE_SELECTION_BMP280, &TimeOut_Ended));
+					
+					//init(ADRESSE_SELECTION_BMP280, &BMP280_Data, 0x6F, 0x70);
+					BMP280_readData(ADRESSE_SELECTION_BMP280, BMP280_Data, &BMP280_Temp, &BMP280_Pressure, &TimeOut_Ended);
+					FTDI.printf("Temp: %4.4f °C, Pression: %4.2f hPa\r\n",BMP280_Temp, BMP280_Pressure/100.0);
+					
+					FTDI.printf("\r\nAltitude=%8.4fm",BMP280_readAltitude(SEALEVELHPA, BMP280_Pressure));
+		
+		
+					wait(1);
+				
+			}
+		
+		
+		}
+	
+	
+	
+	/*
+	//Vitesse FTDI
+	//FTDI.baud(250000);
+	FTDI.baud(921600);
+	//FTDI.baud(512000);
+	FTDI.format(8,SerialBase::None,1);
+	
+	//Initialisation de l'I2C - vitesse 100kHz
+	HDC1080.frequency(400000);
+	
+	//Affichage
+	FTDI.printf("\r\n Test HDC1080 - Presser une touche pour continuer.");
+	int c=FTDI.getc();
+	
+	//declaration des variables
+	unsigned short Temp,HR;
+	float myTemp,myHR;
+	bool Fait;
+	
+	//Attention - attente de 15ms avant une demande d'acquisition apres PowerUp du HDC1080
+	
+	
+	while(true)
+	{
+		FTDI.printf("\r\nHDC1080 detecte : %s\r\n",HDC1080_Test_ID(I2C_HDC1080, &TimeOut_Ended) ? "OUI" : "NON");
+		//Acquisition de Temp
+		Temp=HDC1080_Read_Temp(I2C_HDC1080, Precision_Temp_demandee, &TimeOut_Ended);
+		
+		if(TimeOut_Ended) FTDI.printf("\r\n Erreur timeout sur HDC1080_Read_Temp");
+		else {
+					if(Temp) FTDI.printf("\r\nTemp sur %dbits=%d",Precision_Temp_demandee,Temp);
+					else FTDI.printf("\r\n Erreur lecture Temp HDC1080_Read_Temp");
+				 }
+		
+		
+		//Acquisition de HR
+		HR=HDC1080_Read_HR(I2C_HDC1080, Precision_HR_demandee, &TimeOut_Ended);
+		
+		if(TimeOut_Ended) FTDI.printf("\r\n Erreur timeout sur HDC1080_Read_HR");
+		else {
+					if(HR) FTDI.printf("\r\nHR sur %dbits=%d",Precision_HR_demandee,HR);
+					else FTDI.printf("\r\n Erreur lecture HR HDC1080_Read_HR");
+				 }
+		
+		
+		//Calcul de Temp et HR
+		FTDI.printf("\r\nTemp=%3.1f°C",Calc_Temp(Temp));
+		FTDI.printf("\r\nHR=%3.1f%%\r\n",Calc_HR(HR));
+		
+		//Acquisition de Temp et HR en même temps
+		FTDI.printf("\r\nAcquisition sur %dbits de Temp et %dbits pour HR",Precision_Temp_demandee,Precision_HR_demandee);
+		Fait=HDC1080_Read_Temp_HR(I2C_HDC1080, Precision_Temp_demandee, Precision_HR_demandee, &Temp, &HR, &TimeOut_Ended);
+		
+		if(TimeOut_Ended) FTDI.printf("\r\n Erreur timeout sur HDC1080_Read_Temp_HR");
+		else {
+					if(Fait) FTDI.printf("\r\nTemp=%3.1f°C| HR=%3.1f%%",Calc_Temp(Temp),Calc_HR(HR));
+					else FTDI.printf("\r\n Erreur lecture HR et Temp dans HDC1080_Read_Temp_HR");
+				 }
+		
+		wait(1);
+	}
+	
+	*/
+	
+	/*
+	
 	//Affectation de la fonction à appeler toutes les DUREE_ENTRE_IT
 	//Suppression pour deepsleep
 	Ma_Duree.attach(&IT_LED,DUREE_ENTRE_IT);
@@ -839,9 +1253,14 @@ int main(void)
 	Capt_1_Wire.output();
   Capt_1_Wire = 0;
 	// Impose un NL1 sur la broche en la declarant en entrée par la presence de R de 4.7k.
-  Capt_1_Wire.input();  
+  Capt_1_Wire.input(); 
 	
-	/* Reset state */
+	*/
+	
+	
+	/*
+	
+	// Reset state 
   uint8_t OW_LastDiscrepancy;
   uint8_t OW_LastDevice;
   uint8_t OW_LastFamilyDiscrepancy;
@@ -886,6 +1305,8 @@ int main(void)
 	//Compteur pour la position dans le fichier:
 	int CPT=0;
 	
+	
+	*/
 	
 //-----------------------------------------------------------------------
 //Commande servo-moteur : par PWM
@@ -949,6 +1370,7 @@ int main(void)
 	
 */
 	
+	/*
 	//Gestion de l'affichage de la pompe OPTIMA
 	//Configuration de la SPI
 	
@@ -1000,9 +1422,10 @@ int main(void)
 		wait_ms(200);
 	}
 	
-	
+	*/
 	
 
+/*
 	while(true)
 	{
 		
@@ -1058,6 +1481,11 @@ int main(void)
 	//PC.printf("\r\n Bus  %d",bus_frequency());
 	//PC.printf("\r\n Osc  %d\r\n",extosc_frequency());
 	
+	
+	*/
+	
+	/*
+	
 	if(VEML6075_GetID(ADDRESSE_VEML6075, &I2C_Duree_Time_Out_Ecoulee)!=VEML6075_DEVID) FTDI.printf("\r\nErreur VEML6075 non detecte.");
 	else 
 	{
@@ -1084,8 +1512,10 @@ int main(void)
 	}
 		
 				
+				
+		*/
 	
-	
+	/*
 		
 	FTDI.printf("\r\n\r\r\ncore %d",SystemCoreClock);
 	FTDI.printf("\r\nBus  %d",bus_frequency());
@@ -1110,6 +1540,8 @@ int main(void)
 		
 	//Commande alimentation carte uSD
 	COM_SD_POWER=uSD_ON;
+	
+	*/
 	
 	/*
 	
@@ -1164,6 +1596,8 @@ int main(void)
 		
 	 */
 	
+	
+	/*
 	
 	//Commande alimentation carte uSD
 	COM_SD_POWER=uSD_OFF;
@@ -1268,6 +1702,9 @@ int main(void)
 				wait_ms(200);
 				
 			}
+			
+*/	
+		
 /*			
 	//Configuration mode DEFAULT -> "AT+DEFAULT"
 			sprintf(tab_HC_12_CMD_AT, HC12_DEFAULT);
@@ -1286,6 +1723,9 @@ int main(void)
 			}
 			else FTDI.printf("\r\n sendATcommand=ERROR");
 */			
+			
+			
+/*
 			
 		
 			//Configuration mode FU4 -> "AT+FU4"
@@ -1388,6 +1828,9 @@ else
 			FTDI.printf("\r\nOSV3_type_capteur=%d",OSV3_type_capteur);
 			
 			
+*/
+			
+			
 		/*
 			//transmission par HC12 en mode DEFAULT.
 			int TX_Buffer[]={'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W'};
@@ -1410,6 +1853,9 @@ else
 			}
 		*/
 		
+		
+		/*
+		
 		//Test transmission binaire par XBee et HC-12
 			for(int i=0;i<36;i++)
 			{
@@ -1429,15 +1875,16 @@ else
 			}
 		
 		
+		*/
 		
-		
+		/*
 			
 			FTDI.printf("\r\n\r\nTest communication avec 1 Wire -> DS18B20");
 			//Test communication par 1 wire sans CLASS de chez MAXIM
 			if(OneWireReset()) FTDI.printf("\r\nPas d'escalve detecte en 1 WIRE.");
 			else
 			{
-				/*
+				
 				FTDI.printf("\r\nEsclave detecte en 1 WIRE.");
 				FTDI.printf("\r\nRecherche des adresses en 1 WIRE.");
 				
@@ -1461,7 +1908,7 @@ else
 				{
 					FTDI.printf("\r\nAucun composant trouve en 1 WIRE.");
 				}
-				*/
+				
 				
 				//Recherche de tous les esclaves
 				
@@ -1656,6 +2103,7 @@ else
 						
 	
 			FTDI.printf("\r\n\n Construction de la trame OSV3 :");
+			VAL_HR=99;
 			OSV3_CONSTRUIRE_TRAME(VAL_TempC, VAL_HR);
 			
 			FTDI.printf("\r\n\n Transmission de la trame en OSV3 :T=%3.2f°C | HR=%d%%",VAL_TempC,VAL_HR);
@@ -1683,7 +2131,9 @@ else
 			
  }		
 			
-			
+		
+*/
+ 
 
 //-----------------------------------------------------------------------
 //Commande servo-moteur : par PWM
@@ -1699,8 +2149,8 @@ else
 			//if(HB>1900) HB=1500;
 
 
-			
-	/*		
+	/*	
+		
 			//Attente fin de transmission avant entrer en mode SLEEP
 			//wait(0.5);
 
@@ -1725,6 +2175,7 @@ else
 			else FTDI.printf("\r\n sendATcommand=ERROR");
 			
 			Leave_CMD_mode();
+			
 	*/
 	
 	
@@ -1917,7 +2368,6 @@ else
 		
 		*/
 		
-	}
 
 	
     
@@ -3992,3 +4442,1037 @@ void Copie_de_Tableau(volatile char *s, char *d)
 {
 	while((*d++=*s++)!='\0');
 }	
+
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Gestion du LSM6DS33TR
+/////////////////////////////////////////////////////////////////////////////
+unsigned char LSM_spi_read(unsigned char target)
+{
+	unsigned char out1,out2;
+	
+	LSM_CS=0;
+	
+	out1=LSM.write(target | LSM_READ);
+	out2=LSM.write(0x00);
+	
+	LSM_CS=1;
+	
+	return(out2);
+}
+
+short LSM_spi_read_16bits(unsigned char target)
+{
+	unsigned char out1, out2;
+	short out4;
+	
+	LSM_CS=0;
+	
+	LSM.write(target | LSM_READ);
+	out1=LSM.write(0x00);
+	out2=LSM.write(0x00);
+	
+	LSM_CS=1;
+	
+	out4 =  (short)(out1 | ((unsigned short)out2 << 8));
+	
+	//FTDI.printf("\r\nout4=%#x|%#x|%#x",out4,out2,out1);
+	
+	return(out4);
+	
+}
+
+void LSM_spi_write(unsigned char target, unsigned char data2write)
+{
+	LSM_CS=0;
+	
+	LSM.write(target & LSM_WRITE);
+	LSM.write(data2write);
+	
+	LSM_CS=1;
+	
+}
+
+float CalcAcc(int acc)
+{
+	//accelrange : 2 ou 4 ou 8 ou 16
+	float output = (float)acc*0.061*(16>>1)/1000;
+	return output;
+}
+
+float CalcGyro(int gyro)
+{
+	//gyrorange : 125 ou 245 ou 500 ou 1000 ou 2000
+	float output = (float)gyro*4.375*(1000/125)/1000;
+	return output;
+}
+
+
+
+//Lecture des fonctionalité page 23 de la Doc (§5)
+
+void LSM_spi_init(void)
+{
+	//page 17 de l'AN - attendre 20ms apres la mise sous tension. Acc et Gyro sont ensuite en mode Power_Down automatiquement.
+	unsigned char adress, target, writeout, result;
+	
+	FTDI.printf("\r\nWho am I : %#x",WHO_I_AM);
+	target=0x0F;
+	result=LSM_spi_read(target);
+	if(result!=WHO_I_AM) FTDI.printf("\r\nErreur LSM6DS33 non indentifie avec %#x",result);
+	else FTDI.printf("\r\nLSM6DS33 indentifie par reponse %#x",result);
+	
+	
+	FTDI.printf("\r\nCTRL3_C->IF_INC=1");
+	//Incrementation des adresses lors d'acces multiple en I2C et SPI - 1 valeur par defaut de IF_INC
+	//page 36 de l'AN -> polarite de l'IT ici passage de 0 à 1 par bit H_ACTIVE
+	//page 49 de la doc -> BDU=1 recommandé (bit 6) 
+	target=0x12;
+	result=LSM_spi_read(target);
+	writeout=result | 0b01000100;
+	LSM_spi_write(target,writeout);
+	
+	FTDI.printf("\r\nFIFO_CTRL3->No decimation pour Gyro et Acc:");
+	//no decimation pour acc et gyro - gyro pas dans la FIFO
+	target=0x08;
+	result=LSM_spi_read(target);
+	writeout=result | 0b00000001;
+	LSM_spi_write(target,writeout);
+	
+	FTDI.printf("\r\nCTRL1_XL->Accel");
+	//0110 0100, odr=416Hz , +/-16g, Filter=400Hz
+	//0100 0110, odr=104Hz , +/-16g, Filter=100Hz 
+	//0100 01 00, odr=104Hz , +/-16g, Filter=400Hz<-
+	target=0x10;
+	//writeout=0b01100100;
+	//writeout=0b01000110;
+	writeout=0b01000100;
+	LSM_spi_write(target,writeout);
+	
+	FTDI.printf("\r\nCTRL6_C->Accel en XL_HM_MODE");
+	//Mise en service High-performance operating mode par XL_HM_MODE
+	//mettre 0 dans XL_HM_MODE soit bit 4
+	target=0x15;
+	result=LSM_spi_read(target);
+	writeout=result & 0b11100000;
+	LSM_spi_write(target,writeout);
+	
+	
+	FTDI.printf("\r\nCTRL2_G->Gyro");
+	//GYro en power down
+	//0110 1000, odr=416Hz , 1000dps
+	//0100 1000, odr=104Hz , 1000dps
+	//0000 00 0 0
+	target=0x11;
+	writeout=0b00000000;
+	//writeout=0b01001000;
+	LSM_spi_write(target,writeout);
+	
+	FTDI.printf("\r\nFIFO_CTRL1-> ");
+	//Changement de la taille de la FIFO par FTH[7:0]
+	//Test : ne pas activer pour WAKE_UP et mode bypass to continuous : page 86 de l'AN
+	//Valeur par defaut -> 00000000
+	//Test : activation de la limitation en WAKE_UP et FIFO en bypass et continuous
+	target=0x06;
+	writeout=(TAILLE_FIFO) & 0xFF;
+	//writeout=0b00000000;
+	LSM_spi_write(target,writeout);
+	
+	FTDI.printf("\r\nFIFO_CTRL2-> ");
+	//Changement de la taille de la FIFO par FTH[11:8] - les 4 bits de poids failble
+	//Ne pas toucher au 4 bits de poids fort sauf laisser à 0 les bits 4 et 5
+	//Ne pas changer la taille de la FIFO pour le mode WAKE_UP et FIFO en bypass puis continuous.
+	//Test : activation de la limitation en WAKE_UP et FIFO en bypass et continuous
+	target=0x07;
+	result=LSM_spi_read(target);
+	writeout=(result & 0b11000000) | ((TAILLE_FIFO)>>8);
+	//writeout=(result & 0b11000000);
+	LSM_spi_write(target,writeout);
+	
+	FTDI.printf("\r\nCTRL4_C-> BW-I2C-FIFO");
+	//bandwidth determined by setting BW_XL[1:0]
+	//Taille FIFO limitée par STOP_ON_FTH à 1
+	//I2C desactive - limitation de la taille de FIFO - Gyro Sleep Mode activé
+	//Ne pas activer XL_BW_SCAL_ODR pour le WAKE_UP et FIFO en bypass puis continuous.
+	//1 1 0 0 0 1 0 0
+	//Test : activation de la limitation en WAKE_UP et FIFO en bypass et continuous
+	//1 1 0 0 0 1 0 1
+	target=0x13;
+	result=LSM_spi_read(target);
+	writeout=result | 0b11000101;
+	//writeout=result | 0b11000100;
+	LSM_spi_write(target,writeout);
+	
+	//Activation des 3 axes de ACC
+	FTDI.printf("\r\nCTRL9_XL-> Zen_XL Yen_XL Xen_XL");
+	//Activation des 3 axes de ACC
+	//Mise à 1 des bits 3,4 et 5
+	//Test la place est reservée pour X, Y et Z meme si on n'active pas Y et Z -> toujours laisser les 3 activés
+	//00ZYX000
+	target=0x18;
+	result=LSM_spi_read(target);
+	writeout=(result | 0b00111000) & 0b00111000;
+	LSM_spi_write(target,writeout);
+	
+	
+	//Configuration de la FIFO en : FIFO mode -> stockage dans la FIFO jusqu'à ce qu'elle soit pleine -> Continuous mode et taille FIFO specifiee
+	//odr FIFO plus eleve que odr ACC par securité (au moins x3)
+	//Test avec ACC en X, Y et Z
+	FTDI.printf("\r\nFIFO_CTRL5-> ");
+	//odr(0110)=416Hz et FIFO mode en -> Continuous mode (110)
+	//wake_up avec continuous mode puis FIFO mode (011)
+	//Bypass puis continuous mode (100) -> pas d'information sur la limitation de la FIFO -> pas d'IT apres test -> suppression de la limitation de la FIFO
+	//0 0110 110
+	//0 0110 011
+	//0 0110 100
+	//Test : activation de la limitation en WAKE_UP et FIFO en bypass et continuous
+	//0 0110 100
+	target=0x0A;
+	//writeout=0b00110100;
+	writeout=0b00110100;
+	LSM_spi_write(target,writeout);
+	
+	
+	//Configuration INT1
+	FTDI.printf("\r\nINT1_CTRL->");
+	//Activation de l'IT vers INT1
+	//INT1_FTH seul -> bit 3
+	//INT1 pour FIFO FULL -> bit 5
+	//Pour WAKE_UP activation de FIFO Full flage -> page 86 et 87 de l'AN
+	//FIFO Full Flag dirige vers INT1
+	//Test : activation de la limitation en WAKE_UP et FIFO en bypass et continuous
+	//Activation de INT1_FTH -> bit 3
+	target=0x0D;
+	writeout=0b00001000;
+	//writeout=0b00100000;
+	//writeout=0b00100000;
+	LSM_spi_write(target,writeout);
+	
+	//Configuration du WAKE_UP
+	//page 40 de l'AN
+	//page 36 de l'AN pour memoriser l'evenement declenchent -> mettre le bit LIR à 1 (bit 0)
+	//Le bit LIR est lis à 0 par lecture du registre d'etat des IT
+	FTDI.printf("\r\nTAP_CFG->");
+	//Seulement TAP sur Z
+	//Pour WAKE UP -> page 40,41 de l'AN -> 0x00 dans TAP_CFG -> ne fonctionne que si LIR =1 en mode bypass puis continuous.
+	target=0x58;
+	//writeout=0b00000010;
+	writeout=0b00000001;
+	LSM_spi_write(target,writeout);
+	
+	//Configuration du WAKE_UP_DUR
+	FTDI.printf("\r\nWAKE_UP_DUR->");
+	//aucune duree
+	//aucune durée pour le mode WAKE_UP -> page 41 de l'AN
+	//0 00 0 0000
+	//page 66 de la doc -> 1 LSB à pour durée 1 ODR_time
+	target=0x5C;
+	writeout=0b00000000;
+	LSM_spi_write(target,writeout);
+	
+	//Configuration du WAKE_UP_THS
+	FTDI.printf("\r\nWAKE_UP_THS->");
+	//2*FS_XL/2^6->0.5g pour +-16g
+	//En mode WAKE_UP -> configuration du seuil
+	//0 0 000010
+	//Valeur de seuil comme indiquée dans l'AN page 41
+	target=0x5B;
+	writeout=0b00000010;
+	LSM_spi_write(target,writeout);
+	
+	//Lecture WAKE_UP_SRC
+	//adresse registre 0x1B
+	//page 55 de la doc.
+	//le bit WU_IA indique la detection d'un evenement de type WAKE up
+	//X_WU et Y_WU et Z_WU indique l'evenement.
+	
+	//IT generée sur INT2 par le WAKE_UP
+	//Configuration de MD2_CFG
+	FTDI.printf("\r\nMD2_CFG->");
+	//routage sur INT2 -> mise à 1 du bit 5
+	//Test : WAKE_UP avec limitation de la taille de la FIFO
+	target=0x5F;
+	writeout=0b00100000;
+	LSM_spi_write(target,writeout);
+	
+}
+
+short LSM_Read_FIFO(void)
+{
+	unsigned char Read_Octet;
+	unsigned short tempFIFO=0;
+	
+	Read_Octet=LSM_spi_read(LSM_FIFO_Data_L);
+	tempFIFO=Read_Octet;
+	Read_Octet=LSM_spi_read(LSM_FIFO_Data_H);
+	tempFIFO=tempFIFO | (Read_Octet<<8);
+	
+	return(tempFIFO);
+
+}
+
+unsigned short LSM_FIFO_Status(void)
+{
+	unsigned char Read_Octet;
+	unsigned short tempFIFO=0;
+	
+	Read_Octet=LSM_spi_read(LSM_FIFO_STATUS1);
+	tempFIFO=Read_Octet;
+	Read_Octet=LSM_spi_read(LSM_FIFO_STATUS2);
+	tempFIFO=tempFIFO | (Read_Octet<<8);
+	
+	return(tempFIFO);
+
+}
+
+unsigned short LSM_FIFO_Pattern(void)
+{
+	unsigned char Read_Octet;
+	unsigned short tempFIFO=0;
+	
+	Read_Octet=LSM_spi_read(LSM_FIFO_STATUS3);
+	tempFIFO=Read_Octet;
+	Read_Octet=LSM_spi_read(LSM_FIFO_STATUS4);
+	tempFIFO=tempFIFO | (Read_Octet<<8);
+	
+	return(tempFIFO & 0x03FF);
+
+}
+
+
+
+
+//page 81 de lAN explication sur les differents mode de la FIFO
+//page 85 de l'AN le mode bypass to continous
+//page 89 de l'AN explication sur le rangement dans la FIFO et identification par Pattern.
+
+void LSM_Vidage_FIFO(void)
+{
+	static short AccMesX[TAILLE_FIFO_MAX]={0};
+	static short AccMesY[TAILLE_FIFO_MAX]={0};
+	static short AccMesZ[TAILLE_FIFO_MAX]={0};
+	
+	int i=0;
+	unsigned short Pattern;
+	
+	while((LSM_FIFO_Status() & 0x1000)==0)
+	{
+		//Lecture du pattern et affichage
+		Pattern=LSM_FIFO_Pattern();
+		//FTDI.printf("P=%d|",Pattern);
+		
+		//Test si 1 seul axe en X permet d'avoir plus d'echantillons en FIFO
+		//AccMesX[i++]=LSM_Read_FIFO();
+		
+		
+		switch(Pattern)
+		{
+			case 0 :	AccMesX[i++]=LSM_Read_FIFO();
+								break;
+			case 1 :	AccMesY[i++]=LSM_Read_FIFO();
+								break;
+			case 2 :	AccMesZ[i++]=LSM_Read_FIFO();
+								break;
+		}
+	}
+	
+	FTDI.printf("\r\ni=%d\r\n",i);
+	
+	for (i=0; i<TAILLE_FIFO ; i++)
+	{
+		
+		//FTDI.printf("%d|\r\n",AccMesX[i]);
+		//Affichage par Teraterm
+		FTDI.printf("%d|%d|%d\r\n",AccMesX[i],AccMesY[i],AccMesZ[i]);
+		
+		//Affichage Arduino
+		/*
+		FTDI.printf("%d,",AccMesX[i]);
+		FTDI.printf("%d,",AccMesY[i]);
+		FTDI.printf("%d\n",AccMesZ[i]);
+		*/
+		
+	}
+}
+
+void LSM_bypass_FIFO(void)
+{
+	unsigned char target, writeout, result;
+	//Configuration dela FIFO en mode bypass -> la FIFO est vidée et plus utilisée
+	//Pour l'utiliser de nouveau, changer le mode de la <FIFO
+	//FTDI.printf("\r\nFIFO_CTRL5->");
+	//
+	//
+	target=0x0A;
+	result=LSM_spi_read(target);
+	writeout=(result & 0b11111000);
+	LSM_spi_write(target,writeout);
+	
+}
+
+void LSM_ISR_INT2(void)
+{
+	//COM_SD_POWER=COM_SD_POWER^1;
+	Flag_Wake=false;
+}
+
+
+void LSM_ISR_INT1(void)
+{
+	COM_SD_POWER=COM_SD_POWER^1;
+	Flag_Fifo=false;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// Gestion du HDC1080
+/////////////////////////////////////////////////////////////////////////////
+bool HDC1080_Test_ID(int addr, bool *TimeOut_Ended)
+{
+	bool FLAG=false;
+	*TimeOut_Ended=false;
+	
+	Timer t;
+	t.reset();
+	
+	
+	unsigned short ID;
+	//Reservation 2 octets pour lecture de l'ID -> 0x1050
+	char Tab[]={Reg_ID_Device,0};
+	
+	t.start();
+	float debut=t.read();
+	
+	do
+	{
+		if(HDC1080.write(addr, NULL,0))
+		{
+			FLAG=true;
+			if((t.read()-debut)>I2C_TIMEOUT) {
+																				t.stop();
+																				*TimeOut_Ended=true;
+																				break;
+				
+																			 }
+		}
+			else
+			{
+				FLAG=false;
+				t.stop();
+				//Lancement I2C - ecriture de Reg_ID_Device puis STOP
+				HDC1080.write(addr,Tab,1);
+				//Lecture du resultat - 2 octets
+				HDC1080.read(addr,Tab,2);
+				//Association des 2 octets - MSB LSB
+				ID=(Tab[0]<<8) | Tab[1];
+	
+				//Comparaison avec le resultat attendu
+				if(ID==VAL_ID_Device) return true;
+				else return false;
+			}
+	}
+	while(FLAG);
+
+}
+
+
+unsigned short HDC1080_Read_Temp(int addr, unsigned char Precision, bool *TimeOut_Ended)
+{
+	bool FLAG=false;
+	*TimeOut_Ended=false;
+	//Variable pour analyse de l'execution de write et read en I2C
+	int res;
+	
+	Timer t;
+	t.reset();
+	
+	unsigned short Temp;
+	//Reservation 3 octets pour lecture de Temp et configuration de Reg_Config
+	char Tab[]={Reg_Config,0,0};
+	
+	//Configuration pour Temp seule et precision sur 14bits ou 11bits
+	//Cf. page 15 de la doc.
+	Tab[1]=((Precision==14) ? 0b00000000 : 0b00000100);
+	//Tab[2] toujours à 0 - Cf. page 15 §8.6.3 de la doc.
+	
+	t.start();
+	float debut=t.read();
+	
+	do
+	{
+		if(HDC1080.write(addr, NULL,0))
+		{
+			FLAG=true;
+			if((t.read()-debut)>I2C_TIMEOUT) {
+																				t.stop();
+																				*TimeOut_Ended=true;
+																				break;
+																			 }
+		}	
+			else
+			{
+				FLAG=false;
+				t.stop();
+				
+				//Ecriture configuration puis STOP
+				res=HDC1080.write(addr,Tab,3);
+				if(res) return(0);
+	
+				//lancement de l'acquisition de Temp puis attente Tempo associée à 14bits ou 11bits
+				Tab[0]=Reg_Temp;
+				res=HDC1080.write(addr,Tab,1);
+				if(res) return(0);
+				
+				//Attente tempo en fonction de 14bits ou 11bits
+				//x3 car page 5 de la doc. note (7)
+				if(Precision==14) wait_us((int)(Temp_14bits*1000*3));
+				else wait_us((int)(Temp_11bits*1000*3));
+	
+	
+				//Test Tempo de 20ms - car valeur donnée dans video
+				//wait_ms(20);
+				//Avec cette valeur cela fonctionne - page 5 de la doc, la valeur de tempo est theorique et non verifiee experimentalement.
+				
+				//Lecture du resultat brut - 2 octets puis STOP
+				res=HDC1080.read(addr,Tab,2);
+				if(res) return(0);
+	
+				//Mise en forme du resultat
+				Temp=(Tab[0]<<8) | Tab[1];
+	
+				return(Temp);
+			}
+		
+	}
+	while(FLAG);
+}
+
+unsigned short HDC1080_Read_HR(int addr, unsigned char Precision, bool *TimeOut_Ended)
+{
+	
+	bool FLAG=false;
+	*TimeOut_Ended=false;
+	//Variable pour analyse de l'execution de write et read en I2C
+	int res;
+	
+	Timer t;
+	t.reset();
+	
+	
+	unsigned short HR;
+	//Reservation 3 octets pour lecture de HR et configuration de Reg_Config
+	char Tab[]={Reg_Config,0,0};
+	
+	//Configuration pour HR seule et precision
+	//Cf. page 15 de la doc.
+	//14bits ou 11bits ou 8bits
+	switch(Precision)
+	{
+		case 14 : Tab[1]=0b00000000;
+							break;
+		case 11 : Tab[1]=0b00000001;
+							break;
+		case 8 	: Tab[1]=0b00000010;
+							break;
+	}
+	
+	//Tab[2] toujours à 0 - Cf. page 15 §8.6.3 de la doc.
+	
+	t.start();
+	float debut=t.read();
+	
+	do
+	{
+		if(HDC1080.write(addr, NULL,0))
+		{
+			FLAG=true;
+			if((t.read()-debut)>I2C_TIMEOUT) {
+																				t.stop();
+																				*TimeOut_Ended=true;
+																				break;
+																			 }
+		}	
+			else
+			{
+				FLAG=false;
+				t.stop();
+				
+				//Ecriture configuration puis STOP
+				res=HDC1080.write(addr,Tab,3);
+				if(res) return(0);
+	
+				//lancement de l'acquisition de HR puis attente Tempo associée à 14bits ou 11bits ou 8bits
+				Tab[0]=Reg_HR;
+				res=HDC1080.write(addr,Tab,1);
+				if(res) return(0);
+			
+				//Attente tempo en fonction de 14bits ou 11bits ou 8bits
+				//x3 car page 5 de la doc. note (7)
+				switch(Precision)
+						{
+							case 14 : wait_us((int)(RH_14bits*1000*3));
+												break;
+							case 11 : wait_us((int)(RH_11bits*1000*3));
+												break;
+							case 8 	: wait_us((int)(RH_8bits*1000*3));
+												break;
+						}
+								
+				//Lecture du resultat brut - 2 octets puis STOP
+				res=HDC1080.read(addr,Tab,2);
+				if(res) return(0);
+	
+				//Mise en forme du resultat
+				HR=(Tab[0]<<8) | Tab[1];
+	
+				return(HR);
+
+			}
+	}
+  while(FLAG);	
+
+}
+
+bool HDC1080_Read_Temp_HR(int addr, unsigned char PrecisionTemp, unsigned char PrecisionHR, unsigned short *Temp, unsigned short *HR, bool *TimeOut_Ended)
+{
+	
+	bool FLAG=false;
+	*TimeOut_Ended=false;
+	//Variable pour analyse de l'execution de write et read en I2C
+	int res;
+	
+	Timer t;
+	t.reset();
+	
+	unsigned short myHR,myTemp;
+	//Reservation 4 octets pour lecture de Temp et HR et configuration de Reg_Config
+	char Tab[]={Reg_Config,0,0,0};
+	
+	//Configuration pour HR et Temp en fonction de la precision
+	//Cf. page 15 de la doc.
+	//14bits ou 11bits ou 8bits pour HR
+	switch(PrecisionHR)
+	{
+		case 14 : Tab[1]=Tab[1] | 0b00010000;
+							break;
+		case 11 : Tab[1]=Tab[1] | 0b00010001;
+							break;
+		case 8 	: Tab[1]=Tab[1] | 0b00010010;
+							break;
+	}
+	
+	//14bits ou 11bits pour Temp
+	switch(PrecisionTemp)
+	{
+		case 14 : Tab[1]=Tab[1] | 0b00010000;
+							break;
+		case 11 : Tab[1]=Tab[1] | 0b00010100;
+							break;
+		
+	}
+	
+	//Tab[2] toujours à 0 - Cf. page 15 §8.6.3 de la doc.
+	
+	t.start();
+	float debut=t.read();
+	
+	do
+	{
+		if(HDC1080.write(addr, NULL,0))
+		{
+			FLAG=true;
+			if((t.read()-debut)>I2C_TIMEOUT) {
+																				t.stop();
+																				*TimeOut_Ended=true;
+																				break;
+																			 }
+		}	
+			else
+			{
+				FLAG=false;
+				t.stop();
+				
+				//Ecriture configuration puis STOP
+				res=HDC1080.write(addr,Tab,3);
+				if(res) return(false);
+	
+				//lancement de l'acquisition de Temp puis attente Tempo associée à 14bits ou 11bits
+				Tab[0]=Reg_Temp;
+				res=HDC1080.write(addr,Tab,1);
+				if(res) return(false);
+				
+				
+				
+				//Attente tempo en fonction de 14bits ou 11bits ou 8bits
+				//x3 car page 5 de la doc. note (7)
+				switch(PrecisionHR)
+					{
+						case 14 : wait_us((int)(RH_14bits*1000*3));
+											break;
+						case 11 : wait_us((int)(RH_11bits*1000*3));
+											break;
+						default : wait_us((int)(Temp_11bits*1000*3));
+											break;
+					}
+					
+					
+				
+								
+				//Lecture du resultat brut - 4 octets puis STOP
+				res=HDC1080.read(addr,Tab,4);
+				if(res) return(false);
+	
+				//Mise en forme du resultat
+				myTemp=(Tab[0]<<8) | Tab[1];
+				myHR=(Tab[2]<<8) | Tab[3];
+	
+				//Sortie du resultat
+				*Temp=myTemp;
+				*HR=myHR;
+								
+			
+			}
+		
+	}
+	while(FLAG);
+	
+	return (true);
+
+}
+
+float Calc_Temp(unsigned short Temp)
+{
+	return(((float)Temp / pow(2.0,16.0))*165.0-40.0);
+}
+
+float Calc_HR(unsigned short HR)
+{
+	return(((float)HR / pow(2.0,16.0))*100.0);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// Codage des fonctions pour la gestion du BMP280
+/////////////////////////////////////////////////////////////////////////////
+
+//Autre solution de codage du BMP280
+//https://github.com/BoschSensortec/BMP280_driver
+//https://developer-sjc-indigo-border.mbed.org/teams/MtM/code/BMP280/docs/tip/BMP280_8cpp_source.html
+
+bool BMP280_Test_Presence(int addr, bool *TimeOut_Ended)
+{
+	bool FLAG=false;
+	*TimeOut_Ended=false;
+	
+	Timer t;
+	t.reset();
+	
+	t.start();
+	float debut=t.read();
+	
+	char data=BMP280_REG_ID;
+	
+	do
+	{
+		if(Capt_I2C1.write(addr, NULL,0))
+		{
+			FLAG=true;
+			if((t.read()-debut)>I2C_TIMEOUT) {
+																				t.stop();
+																				*TimeOut_Ended=true;
+																				break;
+																			 }
+		}	
+			else
+			{
+				FLAG=false;
+				t.stop();
+				
+				Capt_I2C1.write(addr, &data, 1, true);
+				Capt_I2C1.read(addr,&data,1);
+	
+				FTDI.printf("\r\nLecture de Chip_ID=%#x ",data);
+	
+				if(data != BMP280_CHIPID) return false;
+				else return true;
+			}
+	}
+	while(FLAG);
+}
+
+bool BMP280_Fin_Mesure(int addr, bool *TimeOut_Ended)
+{
+	bool FLAG=false;
+	*TimeOut_Ended=false;
+	
+	Timer t;
+	t.reset();
+	
+	t.start();
+	float debut=t.read();
+	
+	char data=BMP280_REG_STATUS;
+	
+	do
+	{
+		if(Capt_I2C1.write(addr, NULL,0))
+		{
+			FLAG=true;
+			if((t.read()-debut)>I2C_TIMEOUT) {
+																				t.stop();
+																				*TimeOut_Ended=true;
+																				break;
+																			 }
+		}	
+			else
+			{
+				FLAG=false;
+				t.stop();
+				
+				Capt_I2C1.write(addr, &data, 1, true);
+				Capt_I2C1.read(addr,&data,1);
+	
+				//FTDI.printf("\r\nLecture du registre etat=%#x ",data);
+	
+				if(data & (1<<3)) return false;
+				else return true;
+			}
+	}
+	while(FLAG);
+}
+
+void BMP280_write(int addr, char reg, char ctrl, bool *TimeOut_Ended)
+{
+	bool FLAG=false;
+	*TimeOut_Ended=false;
+	
+	Timer t;
+	t.reset();
+	
+	t.start();
+	float debut=t.read();
+	
+	char data[2] = {reg, ctrl};
+	
+	do
+	{
+		if(Capt_I2C1.write(addr, NULL,0))
+		{
+			FLAG=true;
+			if((t.read()-debut)>I2C_TIMEOUT) {
+																				t.stop();
+																				*TimeOut_Ended=true;
+																				break;
+																			 }
+		}	
+			else
+			{
+				FLAG=false;
+				t.stop();
+				
+				Capt_I2C1.write(addr, data, 2);
+			}
+	}		
+	while(FLAG);
+}
+ 
+void BMP280_read(int addr, char reg, char *data, int length, bool *TimeOut_Ended) 
+{
+	bool FLAG=false;
+	*TimeOut_Ended=false;
+	
+	Timer t;
+	t.reset();
+	
+	t.start();
+	float debut=t.read();
+	
+	do
+	{
+		if(Capt_I2C1.write(addr, NULL,0))
+		{
+			FLAG=true;
+			if((t.read()-debut)>I2C_TIMEOUT) {
+																				t.stop();
+																				*TimeOut_Ended=true;
+																				break;
+																			 }
+		}	
+			else
+			{
+				FLAG=false;
+				t.stop();
+				
+				Capt_I2C1.write(addr, &reg, 1, true);
+				Capt_I2C1.read(addr, data, length);
+			}
+	}		
+	while(FLAG);
+}
+
+
+
+int BMP280_init(int addr, T_BMP280 *BMP280_Data ,char ctrl_meas , char config, bool *TimeOut_Ended)
+{
+	
+	bool FLAG=false;
+	*TimeOut_Ended=false;
+	
+	Timer t;
+	t.reset();
+	
+	t.start();
+	float debut=t.read();
+	
+	do
+	{
+		if(Capt_I2C1.write(addr, NULL,0))
+		{
+			FLAG=true;
+			if((t.read()-debut)>I2C_TIMEOUT) {
+																				t.stop();
+																				*TimeOut_Ended=true;
+																				break;
+																			 }
+		}	
+			else
+			{
+				FLAG=false;
+				t.stop();
+				
+				char reg_ctrl, reg_config;
+				reg_ctrl = BMP280_REG_CTRL_MEAS;
+				reg_config = BMP280_REG_CONFIG;
+	
+				char begin = BMP280_REG_CALIBRATION;
+				char bf[24];
+    
+				BMP280_read(addr, begin, bf, 24, TimeOut_Ended);
+	
+				(*BMP280_Data).dig_T1 = (bf[1]<<8) | bf[0];
+				(*BMP280_Data).dig_T2 = (bf[3]<<8) | bf[2];
+				(*BMP280_Data).dig_T3 = (bf[5]<<8) | bf[4];
+				(*BMP280_Data).dig_P1 = (bf[7]<<8) | bf[6];
+				(*BMP280_Data).dig_P2 = (bf[9]<<8) | bf[8];
+				(*BMP280_Data).dig_P3 = (bf[11]<<8) | bf[10];
+				(*BMP280_Data).dig_P4 = (bf[13]<<8) | bf[12];
+				(*BMP280_Data).dig_P5 = (bf[15]<<8) | bf[14];
+				(*BMP280_Data).dig_P6 = (bf[17]<<8) | bf[16];
+				(*BMP280_Data).dig_P7 = (bf[19]<<8) | bf[18];
+				(*BMP280_Data).dig_P8 = (bf[21]<<8) | bf[20];
+				(*BMP280_Data).dig_P9 = (bf[23]<<8) | bf[22];
+    
+				BMP280_write(addr, reg_ctrl,   ctrl_meas, TimeOut_Ended);
+				BMP280_write(addr, reg_config, config, TimeOut_Ended);
+    
+				//    FTDI.printf("t1:%d, t2:%d, t3:%d\r\n", dig_T1, dig_T2, dig_T3);
+				//    FTDI.printf("p1:%d, p2:%d, p3:%d, p4:%d, p5:%d, p6:%d, p7:%d, p8:%d, p9:%d\r\n", dig_P1, dig_P2, dig_P3, dig_P4, dig_P5, dig_P6, dig_P7, dig_P8, dig_P9);
+    
+				return 0;
+				
+			}
+	}		
+	while(FLAG);
+    
+    
+}
+ 
+int BMP280_readData(int addr,T_BMP280 BMP280_Data , float *tempC, float *pressPa, bool *TimeOut_Ended)
+{
+    
+    int var1,var2,T;
+    int t_fine;
+    char read_reg = BMP280_REG_PRESS;
+    char rx[6];
+    int adc_T,adc_P;
+    
+    BMP280_read(addr, read_reg, rx, 6, TimeOut_Ended);
+    
+    adc_T = ((rx[3]<<12)|(rx[4]<<4)|rx[5]>>4);
+    adc_P = ((rx[0]<<12)|(rx[1]<<4)|rx[2]>>4);
+//    FTDI.printf("adc_T %d, adc_p %d\r\n", adc_T, adc_P);
+    
+    var1=((((adc_T>>3)-((int)(BMP280_Data).dig_T1<<1)))*((int)(BMP280_Data).dig_T2))>>11;
+    var2=(((((adc_T>>4)-((int)(BMP280_Data).dig_T1))*((adc_T>>4)-((int)(BMP280_Data).dig_T1)))>>12)*((int)(BMP280_Data).dig_T3))>>14;
+    t_fine=var1+var2;
+    T=(t_fine*5+128)>>8;
+    *tempC = (float)(T/100.0);
+//    FTDI.printf("BMP280 T %d\r\n", T);
+ 
+		int64_t var1_p, var2_p, press;
+ 
+    var1_p = ((int64_t)t_fine ) - 128000;
+    var2_p = var1_p * var1_p * (int64_t)((BMP280_Data).dig_P6);
+    var2_p = var2_p + ((var1_p * (int64_t)((BMP280_Data).dig_P5))<<17);
+    var2_p = var2_p + (((int64_t)(BMP280_Data).dig_P4) << 35);
+    var1_p = ((var1_p * var1_p * (int64_t)((BMP280_Data).dig_P3)) >>8) + ((var1_p * ((int64_t)((BMP280_Data).dig_P2))) <<12);
+    var1_p = ((((int64_t)1)<<47) + var1_p) * ((int64_t)((BMP280_Data).dig_P1))>>33;
+		
+    if (var1_p == 0) {
+//        						FTDI.printf("var1 is zero!\r\n");
+											return 0;
+										 }
+    press = 1048576 - adc_P;
+		press = (((press << 31) - var2_p) * 3125) / var1_p;
+							
+    var1_p = (((int64_t)(BMP280_Data).dig_P9) * (press >> 13) * (press >> 13)) >> 25;
+    var2_p = (press * (int64_t)((BMP280_Data).dig_P8)) >> 19;
+    press = ((press + var1_p + var2_p) >> 8) + (((int64_t)((BMP280_Data).dig_P7)) <<4);
+    *pressPa = (float)(press / 256.0);
+//    FTDI.printf("press is %d\r\n", press);
+    
+    return 0;
+}
+
+
+float BMP280_readAltitude(float seaLevelhPa, float Press)
+{
+  float altitude;
+	
+	Press=Press/100.0;
+
+  altitude = 44330 * (1.0 - pow(((double)Press / seaLevelhPa), 0.1903));
+
+  return altitude;
+}
+
+bool BMP280_Soft_Reset(int addr, bool *TimeOut_Ended)
+{
+	char data[]={BMP280_REG_RESET, 0xB6};
+	
+	bool FLAG=false;
+	*TimeOut_Ended=false;
+	
+	Timer t;
+	t.reset();
+	
+	t.start();
+	float debut=t.read();
+	
+	do
+	{
+		if(Capt_I2C1.write(addr, NULL,0))
+		{
+			FLAG=true;
+			if((t.read()-debut)>I2C_TIMEOUT) {
+																				t.stop();
+																				*TimeOut_Ended=true;
+																				break;
+																			 }
+		}	
+			else
+			{
+				FLAG=false;
+				t.stop();
+				
+				Capt_I2C1.write(addr, data, 2);
+	
+				//FTDI.printf("\r\nSoft Reset termine");
+				//Start up time de 2ms
+				wait_ms(2);
+				return true;
+				
+			}
+	}
+	while(FLAG);
+
+}

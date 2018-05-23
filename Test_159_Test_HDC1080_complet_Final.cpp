@@ -1475,7 +1475,7 @@ int main(void)
 	
 	
 	FTDI.printf("\r\nPresser une touche pour continuer - AT HC12 - 9600bauds.\r\n");	
-	//FTDI            ();
+	//FTDI.getc();
 	
 	if(!HC12_CONFIG_DONE) 
 {		

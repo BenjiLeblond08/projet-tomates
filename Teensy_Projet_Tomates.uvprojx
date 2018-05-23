@@ -15,7 +15,7 @@
         <TargetCommonOption>
           <Device>MK20DX256xxx7</Device>
           <Vendor>NXP</Vendor>
-          <PackID>Keil.Kinetis_K20_DFP.1.3.0</PackID>
+          <PackID>Keil.Kinetis_K20_DFP.1.6.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>CPUTYPE("Cortex-M4") </Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -1238,6 +1238,36 @@
               <FileName>tomates.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\LibProjetTomates\tomates.h</FilePath>
+            </File>
+            <File>
+              <FileName>BMP280.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\LibProjetTomates\BMP280.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>BMP280.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\LibProjetTomates\BMP280.h</FilePath>
+            </File>
+            <File>
+              <FileName>HDC1080.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\LibProjetTomates\HDC1080.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>HDC1080.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\LibProjetTomates\HDC1080.h</FilePath>
+            </File>
+            <File>
+              <FileName>VEML6075.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\LibProjetTomates\VEML6075.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>VEML6075.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\LibProjetTomates\VEML6075.h</FilePath>
             </File>
           </Files>
         </Group>

@@ -3,21 +3,27 @@
  * Teensy 3.2
  * 
  * HC12 Library
+ * 
+ * @author  Benjamin LEBLOND <benjamin.leblond@orange.fr>
+ * @version 1.0
+ * @date    21-May-2018
+ * 
  */
 
-
-#ifndef HC12_H
-#define HC12_H
+#ifndef _HC12_H
+#define _HC12_H
 
 #include "mbed.h"
 
 #define _DEBUG
 
+#ifndef DEBUG_PRINT
 #ifdef _DEBUG
 extern Serial FTDI;
 #define DEBUG_PRINT(...) FTDI.printf("\r\n"__VA_ARGS__)
 #else
 #define DEBUG_PRINT(...)
+#endif
 #endif
 
 // Gestion des commandes AT

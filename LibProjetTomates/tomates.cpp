@@ -1,16 +1,25 @@
+/**
+ * Projet Tomates
+ * Teensy 3.2
+ * 
+ * @file tomates.cpp
+ * 
+ * @author Benjamin LEBLOND <benjamin.leblond@orange.fr>
+ * @date   21-May-2018
+ */
 
 #include "mbed.h"
 #include "tomates.h"
 
 void say_hello(void)
 {
-	FTDI.printf("\r\n");
-	FTDI.printf("\r\n ###############################");
-	FTDI.printf("\r\n # Hello World                 #");
-	FTDI.printf("\r\n # I'm Teensy 3.2              #");
-	FTDI.printf("\r\n # Program by Benjamin LEBLOND #");
-	FTDI.printf("\r\n ###############################");
-	FTDI.printf("\r\n");
+	DEBUG_PRINT();
+	DEBUG_PRINT("###############################");
+	DEBUG_PRINT("# Hello World                 #");
+	DEBUG_PRINT("# I'm Teensy 3.2              #");
+	DEBUG_PRINT("# Program by Benjamin LEBLOND #");
+	DEBUG_PRINT("###############################");
+	DEBUG_PRINT();
 }
 
 #ifndef TEST_PROF
@@ -77,3 +86,24 @@ void mise_a_l_heure(int wday, int mday, int mon, int year, int hour, int min, in
 	DEBUG_PRINT("FIN mise a l'heure");
 }
 
+void i2c_scann(I2C* i2c)
+{
+	for (int i=0; i<128; i++) {
+		if(!i2c->write(i<<1, NULL, 0))
+			DEBUG_PRINT("%#x ACK",i);
+	}
+}
+
+void print_sensors_data(sensors_union sensors)
+{
+	DEBUG_PRINT();
+	DEBUG_PRINT("temp_bmp = (hex) 0x%-8x = (10) %-4.4f", sensors.data.temp_bmp, sensors.data.temp_bmp);
+	DEBUG_PRINT("pressure = (hex) 0x%-8x = (10) %-4.4f", sensors.data.pressure, sensors.data.pressure);
+	DEBUG_PRINT("altitude = (hex) 0x%-8x = (10) %-4.4f", sensors.data.altitude, sensors.data.altitude);
+	DEBUG_PRINT("temp_hdc = (hex) 0x%-8x = (10) %-4.4f", sensors.data.temp_hdc, sensors.data.temp_hdc);
+	DEBUG_PRINT("humidity = (hex) 0x%-8x = (10) %-4.4f", sensors.data.humidity, sensors.data.humidity);
+	DEBUG_PRINT("UVA      = (hex) 0x%-8x = (10) %-4.4f", sensors.data.UVA, sensors.data.UVA);
+	DEBUG_PRINT("UVB      = (hex) 0x%-8x = (10) %-4.4f", sensors.data.UVB, sensors.data.UVB);
+	DEBUG_PRINT("UVI      = (hex) 0x%-8x = (10) %-4.4f", sensors.data.UVI, sensors.data.UVI);
+	DEBUG_PRINT("pump_on  = %-d", sensors.data.pump_on);
+}

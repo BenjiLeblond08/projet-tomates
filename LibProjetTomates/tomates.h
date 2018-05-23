@@ -2,29 +2,48 @@
  * Projet Tomates
  * Teensy 3.2
  * 
- * @author Benjamin LEBLOND <benjamin.leblond@orange.fr>
+ * @file tomates.h
  * 
- * water_lvl = PTD6
- * water_lvl_sig_freq = 0.69296
+ * @author Benjamin LEBLOND <benjamin.leblond@orange.fr>
+ * @date   21-May-2018
+ * 
+ * Broches :
+ *  BMP280  	SDA = PTC11;
+ *  BMP280  	SCL = PTC10;
+ *  BMP280  	ADDR = 0x77 << 1;
+ *  HDC1080 	SDA = PTC11;
+ *  HDC1080 	SCL = PTC10;
+ *  HDC1080 	ADDR = 0x80; // 0b1000000 << 1
+ *  VEML6075	SDA = PTB3;
+ *  VEML6075	SCL = PTB2;
+ *  VEML6075	ADDR = 0x10;
+ *  HC12    	TX = PTB17;
+ *  HC12    	RX = PTB16;
+ *  FTDI    	TX = PTD3;
+ *  FTDI    	RX = PTD2;
+ * 	water_lvl = PTD6
+ * 	
+ *  water_lvl_sig_freq = 0.69296
  * 
  */
 
-#ifndef TOMATES_H
-#define TOMATES_H
+#ifndef _TOMATES_H
+#define _TOMATES_H
 
-#define TEST_PROF
+// #define TEST_PROF
 
 #include "mbed.h"
 
 #define _DEBUG
 
+#ifndef DEBUG_PRINT
 #ifdef _DEBUG
 extern Serial FTDI;
-#define DEBUG_PRINT(...) FTDI.printf("\r\n"__VA_ARGS__)
+#define DEBUG_PRINT(...) FTDI.printf("\r\n "__VA_ARGS__)
 #else
 #define DEBUG_PRINT(...)
 #endif
-
+#endif
 
 /**
  * Utilisation de l'horloge RTC
@@ -75,13 +94,16 @@ typedef union {
 } TU_DB;
 
 struct data_sensors {
-	float temp;            // 4 octets
-	unsigned int humidity; // 4 octets
-	unsigned int UV;       // 4 octets
-	float UVA;             // 4 octets
-	float UVB;             // 4 octets
-	int pressure;          // 4 octets
-}; // size = 24 octets
+	float temp_bmp; // 4 octets
+	float pressure; // 4 octets
+	float altitude; // 4 octets
+	float temp_hdc; // 4 octets
+	float humidity; // 4 octets
+	float UVA;      // 4 octets
+	float UVB;      // 4 octets
+	float UVI;      // 4 octets
+	int pump_on;    // 4 octets
+}; // size = 36 octets
 
 typedef union {
 	struct data_sensors data;
@@ -108,5 +130,12 @@ void Teensy32_Back2Speed_After_PowerDown(void);
 #endif
 
 void mise_a_l_heure(int wday = LUNDI, int mday = 7, int mon = MAI, int year = 2018, int hour = 0, int min = 0, int sec = 0);
+
+/**
+ * Scanner I2C
+ */
+void i2c_scann(I2C* i2c);
+
+void print_sensors_data(sensors_union sensors);
 
 #endif

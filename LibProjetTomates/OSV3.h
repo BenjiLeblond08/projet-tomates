@@ -5,8 +5,8 @@
  * Oregon Scientific V2 and V3 Library
  */
 
-#ifndef OSV3_H
-#define OSV3_H
+#ifndef _OSV3_H
+#define _OSV3_H
 
 #include "mbed.h"
 #include "WakeUp.h"
