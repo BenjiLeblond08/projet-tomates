@@ -72,9 +72,10 @@ int main(void)
 	hc12_1.clearBuffer();
 	hc12_1.sleep();
 
-	i2c0.frequency(400000);
+	// i2c0.frequency(400000);
 	i2c1.frequency(400000);
 	bmp280_1.initialize();
+	veml6075_1.setUVConf(VEML6075::CONF_UV_AF_AUTO | VEML6075::CONF_HD | VEML6075::CONF_UV_IT_100MS);
 
 	water_lvl_it.mode(PullNone);
 	water_lvl_it.rise(&water_lvl_it_rise);

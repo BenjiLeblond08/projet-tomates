@@ -15,7 +15,7 @@
         <TargetCommonOption>
           <Device>MK20DX256xxx7</Device>
           <Vendor>NXP</Vendor>
-          <PackID>Keil.Kinetis_K20_DFP.1.6.0</PackID>
+          <PackID>Keil.Kinetis_K20_DFP.1.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>CPUTYPE("Cortex-M4") </Cpu>
           <FlashUtilSpec></FlashUtilSpec>
